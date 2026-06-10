@@ -1,0 +1,1486 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Startech WiFi Zone</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap');
+
+:root {
+  --rouge: #EF2B2D;
+  --vert: #009A44;
+  --or: #FCD116;
+  --noir: #0A0A0A;
+  --g1: #141414;
+  --g2: #1C1C1C;
+  --g3: #262626;
+  --g4: #333;
+  --txt: #F0F0F0;
+  --dim: #888;
+  --bdr: #2A2A2A;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:"Inter",sans-serif; background:var(--noir); color:var(--txt); min-height:100vh; font-size:16px; }
+
+/* NAV */
+.nav {
+  display:flex; align-items:center;
+  background:var(--g1); border-bottom:1px solid var(--bdr);
+  padding:0 12px; height:52px;
+  position:sticky; top:0; z-index:100; gap:8px;
+}
+.nav-logo { display:flex; align-items:center; gap:8px; flex:1; min-width:0; }
+.nav-logo-icon {
+  width:32px; height:32px; border-radius:8px; flex-shrink:0;
+  background:linear-gradient(135deg,var(--rouge),#a01);
+  display:flex; align-items:center; justify-content:center; font-size:19px;
+}
+.nav-logo-text { font-size:19px; font-weight:700; white-space:nowrap; }
+.nav-logo-sub { font-size:19px; color:var(--or); letter-spacing:2px; text-transform:uppercase; }
+
+/* HAMBURGER */
+.hamburger {
+  display:none; flex-direction:column; justify-content:center; align-items:center;
+  gap:5px; width:38px; height:38px; border-radius:8px;
+  border:1px solid var(--bdr); background:var(--g3);
+  cursor:pointer; flex-shrink:0;
+}
+.hamburger span { display:block; width:18px; height:2px; background:var(--txt); border-radius:2px; transition:all 0.2s; }
+.hamburger.open span:nth-child(1) { transform:translateY(7px) rotate(45deg); }
+.hamburger.open span:nth-child(2) { opacity:0; }
+.hamburger.open span:nth-child(3) { transform:translateY(-7px) rotate(-45deg); }
+
+/* TABS desktop */
+.nav-tabs { display:flex; gap:2px; flex-shrink:0; }
+.tab {
+  padding:6px 13px; border:none; background:transparent;
+  color:var(--dim); font-size:21px; font-weight:500;
+  cursor:pointer; border-radius:6px; font-family:"Inter",sans-serif;
+  transition:all 0.15s; white-space:nowrap;
+}
+.tab:hover { color:var(--txt); background:var(--g3); }
+.tab.on { background:var(--rouge); color:#fff; }
+
+/* DROPDOWN mobile */
+.nav-dropdown {
+  display:none; position:fixed; top:52px; left:0; right:0;
+  background:var(--g1); border-bottom:1px solid var(--bdr);
+  z-index:99; flex-direction:column; padding:8px;
+  box-shadow:0 8px 24px rgba(0,0,0,.6);
+}
+.nav-dropdown.open { display:flex; }
+.nav-dropdown .tab {
+  padding:13px 16px; border-radius:8px; font-size:17px;
+  text-align:left; display:flex; align-items:center; gap:10px;
+}
+
+.nav-stock {
+  font-size:17px; color:var(--dim);
+  background:var(--g3); border:1px solid var(--bdr);
+  padding:4px 9px; border-radius:20px;
+  display:flex; align-items:center; gap:5px; flex-shrink:0; white-space:nowrap;
+}
+.stock-dot { width:6px; height:6px; border-radius:50%; background:var(--dim); }
+.stock-dot.ok { background:var(--vert); }
+
+.pg { display:none; }
+.pg.on { display:block; }
+
+/* VENTE */
+.vente-wrap { display:grid; grid-template-columns:1fr 300px; min-height:calc(100vh - 52px); }
+.forfaits-col { padding:16px; border-right:1px solid var(--bdr); overflow-y:auto; }
+.col-label { font-size:19px; letter-spacing:2px; text-transform:uppercase; color:var(--dim); margin-bottom:12px; padding-bottom:8px; border-bottom:1px solid var(--bdr); }
+.forfaits-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:8px; }
+.fc { background:var(--g2); border:1px solid var(--bdr); border-radius:10px; padding:12px; cursor:pointer; transition:all 0.15s; position:relative; overflow:hidden; }
+.fc:hover { border-color:var(--or); transform:translateY(-2px); }
+.fc.sel { border-color:var(--vert); background:rgba(0,154,68,.1); }
+.fc-accent { position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,var(--rouge),var(--or)); }
+.fc-dur { font-size:21px; font-weight:700; font-family:"JetBrains Mono",monospace; color:var(--or); line-height:1.2; }
+.fc-unit { font-size:19px; color:var(--dim); text-transform:uppercase; letter-spacing:1px; margin-top:2px; }
+.fc-speed { font-size:17px; color:var(--vert); margin-top:6px; }
+.fc-prix { font-size:21px; font-weight:700; margin-top:6px; }
+.fc-prix span { font-size:19px; font-weight:400; color:var(--dim); }
+.fc-badge { position:absolute; top:6px; right:6px; font-size:8px; padding:2px 5px; border-radius:3px; font-weight:700; letter-spacing:.5px; }
+.bp { background:var(--rouge); color:#fff; }
+.bv { background:var(--vert); color:#fff; }
+.bo { background:var(--or); color:#000; }
+.fc-epuise { position:absolute; inset:0; background:rgba(10,10,10,.7); display:flex; align-items:center; justify-content:center; font-size:17px; color:var(--rouge); font-weight:700; letter-spacing:1px; text-transform:uppercase; border-radius:9px; }
+.action-col { background:var(--g1); padding:16px; display:flex; flex-direction:column; gap:12px; overflow-y:auto; }
+.qr-zone { background:var(--g2); border:1px solid var(--bdr); border-radius:12px; padding:16px; text-align:center; min-height:220px; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+.qr-idle-icon { font-size:44px; margin-bottom:10px; opacity:.3; }
+.qr-idle-txt { font-size:19px; color:var(--dim); line-height:1.5; }
+.qr-result { width:100%; }
+.qr-result-header { font-size:19px; letter-spacing:1.5px; text-transform:uppercase; color:var(--dim); margin-bottom:10px; }
+.qr-canvas-wrap { background:#fff; border-radius:10px; padding:10px; display:inline-flex; margin-bottom:10px; }
+.qr-code-txt { font-family:"JetBrains Mono",monospace; font-size:21px; font-weight:700; letter-spacing:3px; color:var(--or); margin-bottom:4px; }
+.qr-forfait-info { font-size:21px; color:var(--vert); margin-bottom:3px; }
+.qr-prix-info { font-size:17px; color:var(--dim); }
+.btn-valider { width:100%; padding:13px; border:none; border-radius:9px; background:linear-gradient(135deg,var(--rouge),#b01); color:#fff; font-size:17px; font-weight:700; cursor:pointer; font-family:"Inter",sans-serif; transition:all 0.2s; letter-spacing:.3px; }
+.btn-valider:hover { opacity:.85; transform:translateY(-1px); }
+.btn-valider:disabled { opacity:.3; cursor:not-allowed; transform:none; }
+.btn-annuler { width:100%; padding:10px; border:1px solid var(--bdr); border-radius:9px; background:transparent; color:var(--dim); font-size:21px; cursor:pointer; font-family:"Inter",sans-serif; transition:all .15s; }
+.btn-annuler:hover { color:var(--txt); border-color:var(--g4); }
+.vente-info { background:var(--g3); border-radius:9px; padding:12px; font-size:21px; }
+.vi-row { display:flex; justify-content:space-between; margin-bottom:5px; }
+.vi-row:last-child { margin-bottom:0; }
+.vi-label { color:var(--dim); }
+.vi-val { font-weight:600; }
+.vi-total { color:var(--or); font-size:19px; font-family:"JetBrains Mono",monospace; }
+.pay-btns { display:grid; grid-template-columns:1fr 1fr; gap:6px; }
+.pay-btn { padding:8px 6px; border:1px solid var(--bdr); background:var(--g3); color:var(--dim); border-radius:7px; font-size:17px; cursor:pointer; text-align:center; transition:all .15s; font-family:"Inter",sans-serif; }
+.pay-btn.on { border-color:var(--or); color:var(--or); background:rgba(252,209,22,.07); }
+
+/* NFC */
+.btn-nfc { width:100%; padding:13px; border:2px solid var(--or); border-radius:9px; background:rgba(252,209,22,.07); color:var(--or); font-size:19px; font-weight:700; cursor:pointer; font-family:"Inter",sans-serif; transition:all 0.2s; display:flex; align-items:center; justify-content:center; gap:8px; }
+.btn-nfc:hover { background:rgba(252,209,22,.15); }
+.btn-nfc.nfc-active { background:var(--or); color:#000; animation:nfc-pulse 1s infinite; }
+.btn-nfc:disabled { opacity:.3; cursor:not-allowed; }
+@keyframes nfc-pulse { 0%,100% { box-shadow:0 0 0 0 rgba(252,209,22,.5); } 50% { box-shadow:0 0 0 10px rgba(252,209,22,0); } }
+.nfc-hint { font-size:17px; color:var(--dim); text-align:center; margin-top:4px; }
+
+/* STOCK */
+.stock-wrap { padding:16px; max-width:860px; margin:0 auto; }
+.drop-area { border:2px dashed var(--bdr); border-radius:12px; padding:32px 20px; text-align:center; cursor:pointer; background:var(--g2); transition:all 0.2s; margin-bottom:14px; }
+.drop-area.drag { border-color:var(--or); background:rgba(252,209,22,.04); }
+.drop-area:hover { border-color:var(--g4); }
+.drop-icon { font-size:36px; margin-bottom:8px; }
+.drop-title { font-size:17px; font-weight:600; margin-bottom:4px; }
+.drop-sub { font-size:21px; color:var(--dim); }
+.format-hint { background:var(--g2); border:1px solid var(--bdr); border-radius:10px; padding:12px 14px; font-size:21px; color:var(--dim); margin-bottom:14px; line-height:1.7; }
+.format-hint code { font-family:"JetBrains Mono",monospace; color:var(--or); font-size:17px; background:var(--noir); padding:2px 5px; border-radius:3px; }
+.stock-table-wrap { overflow-x:auto; }
+.stbl { width:100%; border-collapse:collapse; font-size:19px; }
+.stbl th { text-align:left; padding:9px 10px; font-size:19px; letter-spacing:1.5px; text-transform:uppercase; color:var(--dim); border-bottom:1px solid var(--bdr); }
+.stbl td { padding:10px; border-bottom:1px solid rgba(42,42,42,.5); }
+.stbl tr:hover td { background:rgba(255,255,255,.02); }
+.code-mono { font-family:"JetBrains Mono",monospace; font-size:21px; color:var(--or); }
+.st-badge { padding:3px 8px; border-radius:4px; font-size:19px; font-weight:600; }
+.st-dispo { background:rgba(0,154,68,.2); color:var(--vert); }
+.st-utilise { background:rgba(136,136,136,.2); color:var(--dim); }
+.stock-stats { display:grid; grid-template-columns:repeat(auto-fill,minmax(110px,1fr)); gap:8px; margin-bottom:14px; }
+.ss-card { background:var(--g2); border:1px solid var(--bdr); border-radius:10px; padding:12px; text-align:center; }
+.ss-val { font-size:24px; font-weight:700; font-family:"JetBrains Mono",monospace; color:var(--or); }
+.ss-label { font-size:19px; color:var(--dim); text-transform:uppercase; letter-spacing:1px; margin-top:4px; }
+
+/* HISTO */
+.histo-wrap { padding:16px; max-width:860px; margin:0 auto; }
+.histo-filters { display:flex; gap:6px; margin-bottom:12px; flex-wrap:wrap; }
+.flt { padding:5px 11px; border:1px solid var(--bdr); border-radius:6px; background:transparent; color:var(--dim); font-size:17px; cursor:pointer; font-family:"Inter",sans-serif; transition:all .15s; }
+.flt.on { background:var(--rouge); border-color:var(--rouge); color:#fff; }
+.recettes-bar { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:12px; }
+.rb-card { background:var(--g2); border:1px solid var(--bdr); border-radius:9px; padding:10px; text-align:center; }
+.rb-val { font-size:19px; font-weight:700; color:var(--or); font-family:"JetBrains Mono",monospace; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.rb-label { font-size:19px; color:var(--dim); text-transform:uppercase; letter-spacing:1px; margin-top:3px; }
+
+/* PARAMS */
+.param-wrap { padding:16px; max-width:560px; margin:0 auto; }
+.param-section { background:var(--g2); border:1px solid var(--bdr); border-radius:12px; padding:16px; margin-bottom:12px; }
+.param-section-title { font-size:17px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--dim); margin-bottom:12px; padding-bottom:8px; border-bottom:1px solid var(--bdr); }
+.param-row { margin-bottom:10px; }
+.param-label { font-size:17px; color:var(--dim); margin-bottom:5px; display:block; }
+.param-input { width:100%; padding:9px 12px; background:var(--g3); border:1px solid var(--bdr); border-radius:7px; color:var(--txt); font-size:19px; font-family:"Inter",sans-serif; transition:border-color .15s; }
+.param-input:focus { outline:none; border-color:var(--or); }
+.param-hint { font-size:17px; color:var(--dim); margin-top:4px; }
+.btn-param-save { padding:9px 20px; background:var(--vert); border:none; border-radius:8px; color:#fff; font-size:19px; font-weight:700; cursor:pointer; font-family:"Inter",sans-serif; transition:opacity .15s; }
+.btn-param-save:hover { opacity:.85; }
+.btn-param-reset { padding:9px 16px; background:transparent; border:1px solid var(--bdr); border-radius:8px; color:var(--dim); font-size:21px; cursor:pointer; font-family:"Inter",sans-serif; transition:all .15s; margin-left:8px; }
+.btn-param-reset:hover { color:var(--rouge); border-color:var(--rouge); }
+
+/* FORFAITS GESTION */
+.gf-wrap { padding:16px; max-width:780px; margin:0 auto; }
+.gf-toolbar { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; }
+.btn-add { padding:8px 14px; background:var(--vert); border:none; border-radius:8px; color:#fff; font-size:19px; font-weight:700; cursor:pointer; font-family:"Inter",sans-serif; transition:opacity .15s; display:flex; align-items:center; gap:6px; }
+.btn-add:hover { opacity:.85; }
+.gf-list { display:flex; flex-direction:column; gap:8px; }
+.gf-row { background:var(--g2); border:1px solid var(--bdr); border-radius:10px; padding:12px 14px; display:grid; grid-template-columns:28px 1fr auto auto; align-items:center; gap:10px; transition:border-color .15s; }
+.gf-row:hover { border-color:var(--g4); }
+.gf-icone { font-size:24px; text-align:center; }
+.gf-infos { min-width:0; }
+.gf-label { font-size:19px; font-weight:700; }
+.gf-sub { font-size:17px; color:var(--dim); margin-top:1px; }
+.gf-prix-cell { font-size:21px; font-weight:700; color:var(--or); font-family:"JetBrains Mono",monospace; white-space:nowrap; }
+.gf-prix-cell span { font-size:19px; font-weight:400; color:var(--dim); }
+.gf-actions { display:flex; gap:6px; }
+.btn-edit, .btn-del { width:32px; height:32px; border-radius:7px; border:1px solid var(--bdr); background:var(--g3); cursor:pointer; font-size:17px; display:flex; align-items:center; justify-content:center; transition:all .15s; }
+.btn-edit:hover { border-color:var(--or); }
+.btn-del:hover { border-color:var(--rouge); background:rgba(239,43,45,.08); }
+
+/* MODAL */
+.modal-bg { display:none; position:fixed; inset:0; background:rgba(0,0,0,.8); z-index:200; align-items:center; justify-content:center; padding:12px; }
+.modal-bg.on { display:flex; }
+.modal-box { background:var(--g1); border:1px solid var(--bdr); border-radius:14px; padding:20px; width:100%; max-width:400px; max-height:90vh; overflow-y:auto; }
+.modal-title { font-size:21px; font-weight:700; margin-bottom:16px; }
+.form-row { margin-bottom:10px; }
+.form-label { font-size:17px; text-transform:uppercase; letter-spacing:1px; color:var(--dim); margin-bottom:5px; display:block; }
+.form-input { width:100%; padding:9px 12px; background:var(--g3); border:1px solid var(--bdr); border-radius:7px; color:var(--txt); font-size:19px; font-family:"Inter",sans-serif; transition:border-color .15s; }
+.form-input:focus { outline:none; border-color:var(--or); }
+.form-row-2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.badge-select { display:flex; gap:6px; flex-wrap:wrap; margin-top:4px; }
+.badge-opt { padding:4px 10px; border-radius:5px; border:1px solid var(--bdr); background:var(--g3); color:var(--dim); font-size:17px; font-weight:600; cursor:pointer; font-family:"Inter",sans-serif; transition:all .15s; }
+.badge-opt.sel-b { border-color:var(--or); color:var(--or); background:rgba(252,209,22,.1); }
+.icone-select { display:flex; gap:6px; flex-wrap:wrap; margin-top:4px; }
+.ico-opt { width:34px; height:34px; border-radius:7px; border:1px solid var(--bdr); background:var(--g3); font-size:21px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .15s; }
+.ico-opt.sel-i { border-color:var(--or); background:rgba(252,209,22,.1); }
+.modal-btns { display:flex; gap:8px; margin-top:16px; }
+.btn-save { flex:1; padding:11px; background:var(--vert); border:none; border-radius:8px; color:#fff; font-size:19px; font-weight:700; cursor:pointer; font-family:"Inter",sans-serif; transition:opacity .15s; }
+.btn-save:hover { opacity:.85; }
+.btn-cancel-modal { flex:1; padding:11px; background:var(--g3); border:1px solid var(--bdr); border-radius:8px; color:var(--txt); font-size:19px; cursor:pointer; font-family:"Inter",sans-serif; transition:background .15s; }
+.btn-cancel-modal:hover { background:var(--g4); }
+
+/* TOAST */
+.toast { position:fixed; bottom:16px; right:16px; background:var(--g2); border:1px solid var(--vert); border-radius:9px; padding:10px 16px; font-size:19px; z-index:999; transform:translateY(80px); opacity:0; transition:all 0.3s; pointer-events:none; }
+.toast.on { transform:translateY(0); opacity:1; }
+.toast.err { border-color:var(--rouge); }
+
+/* EMPTY */
+.empty { text-align:center; padding:40px 20px; color:var(--dim); }
+.empty-ico { font-size:36px; margin-bottom:8px; }
+.empty-t { font-size:17px; font-weight:600; color:var(--txt); margin-bottom:4px; }
+
+::-webkit-scrollbar { width:4px; }
+::-webkit-scrollbar-thumb { background:var(--bdr); border-radius:2px; }
+
+/* MOBILE */
+@media (max-width:640px) {
+  .nav-tabs { display:none; }
+  .hamburger { display:flex; }
+  .nav-logo-sub { display:none; }
+  .vente-wrap { grid-template-columns:1fr; grid-template-rows:auto auto; min-height:unset; }
+  .forfaits-col { border-right:none; border-bottom:1px solid var(--bdr); }
+  .forfaits-grid { grid-template-columns:repeat(2,1fr); }
+  .action-col { padding:12px; }
+  .qr-zone { min-height:180px; }
+  .form-row-2 { grid-template-columns:1fr; }
+  .stbl th, .stbl td { padding:8px 6px; }
+  .gf-row { grid-template-columns:28px 1fr auto; }
+}
+@media (min-width:641px) { .nav-dropdown { display:none !important; } }
+@media print {
+  .nav,.action-col,.drop-area,.format-hint,.stock-stats,.histo-filters { display:none!important; }
+  .vente-wrap { grid-template-columns:1fr!important; }
+  .forfaits-col { display:none!important; }
+}
+
+.fc-total-bar {
+  background:var(--g2); border:1px solid var(--bdr);
+  border-radius:9px; padding:10px 14px; margin-bottom:10px;
+  font-size:14px; font-weight:600; color:var(--or);
+  font-family:"JetBrains Mono",monospace; text-align:center;
+}
+.fc-total-bar.zero { color:var(--rouge); }
+
+/* STOCK PAR FORFAIT */
+.fc-count {
+  display:block; margin-top:6px;
+  font-size:13px; font-weight:700;
+  padding:2px 8px; border-radius:20px;
+  background:var(--g4); color:var(--dim);
+  width:fit-content;
+}
+.fc-count.ok { background:rgba(0,154,68,.3); color:var(--vert); }
+.fc-count.low { background:rgba(252,209,22,.2); color:var(--or); }
+.fc-count.zero { background:rgba(239,43,45,.2); color:var(--rouge); }
+
+.total-bar {
+  display:flex; align-items:center; justify-content:space-between;
+  background:var(--g2); border:1px solid var(--bdr);
+  border-radius:10px; padding:12px 16px; margin-bottom:14px;
+}
+.total-bar-label { font-size:15px; color:var(--dim); }
+.total-bar-val { font-size:24px; font-weight:700; font-family:"JetBrains Mono",monospace; color:var(--or); }
+
+.spf-section { margin-bottom:10px; }
+.spf-header {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:12px 14px; background:var(--g2); border:1px solid var(--bdr);
+  border-radius:10px; cursor:pointer; transition:border-color .15s;
+}
+.spf-header:hover { border-color:var(--g4); }
+.spf-header.expanded { border-radius:10px 10px 0 0; border-bottom-color:transparent; }
+.spf-left { display:flex; align-items:center; gap:10px; }
+.spf-name { font-size:15px; font-weight:700; }
+.spf-badge {
+  font-size:13px; font-weight:700; padding:3px 10px;
+  border-radius:20px;
+}
+.spf-badge.ok { background:rgba(0,154,68,.25); color:var(--vert); }
+.spf-badge.low { background:rgba(252,209,22,.2); color:var(--or); }
+.spf-badge.zero { background:rgba(239,43,45,.15); color:var(--rouge); }
+.spf-chev { font-size:12px; color:var(--dim); transition:transform .2s; }
+.spf-chev.rot { transform:rotate(180deg); }
+.spf-body {
+  display:none; background:var(--g2);
+  border:1px solid var(--bdr); border-top:none;
+  border-radius:0 0 10px 10px;
+}
+.spf-body.show { display:block; }
+.spf-toolbar { padding:10px 12px; border-bottom:1px solid var(--bdr); display:flex; gap:8px; }
+.btn-efface-forfait {
+  padding:6px 12px; border:1px solid var(--bdr); border-radius:7px;
+  background:transparent; color:var(--rouge); font-size:13px;
+  cursor:pointer; font-family:"Inter",sans-serif; transition:all .15s;
+}
+.btn-efface-forfait:hover { background:rgba(239,43,45,.1); }
+</style>
+<body>
+
+<nav class="nav">
+  <div class="nav-logo">
+    <div class="nav-logo-icon">📡</div>
+    <div>
+      <div class="nav-logo-text">Startech WiFi Zone</div>
+      <div class="nav-logo-sub">Barsalogho</div>
+    </div>
+  </div>
+  <div class="nav-tabs">
+    <button class="tab on" onclick="goPage('vente',this)">Vente</button>
+    <button class="tab" onclick="goPage('stock',this)">Stock CSV</button>
+    <button class="tab" onclick="goPage('forfaits',this)">Forfaits</button>
+    <button class="tab" onclick="goPage('histo',this)">Historique</button>
+    <button class="tab" onclick="goPage('params',this)">Parametres</button>
+  </div>
+  <div class="nav-stock" id="navStock">
+    <div class="stock-dot" id="stockDot"></div>
+    <span id="stockLabel">0 tickets</span>
+  </div>
+  <button class="hamburger" id="hamburger" onclick="toggleMenu()">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- DROPDOWN MOBILE -->
+<div class="nav-dropdown" id="navDropdown">
+  <button class="tab on" onclick="goPage('vente',this);fermerMenu()">Vente</button>
+  <button class="tab" onclick="goPage('stock',this);fermerMenu()">Stock CSV</button>
+  <button class="tab" onclick="goPage('forfaits',this);fermerMenu()">Forfaits</button>
+  <button class="tab" onclick="goPage('histo',this);fermerMenu()">Historique</button>
+  <button class="tab" onclick="goPage('params',this);fermerMenu()">Parametres</button>
+</div>
+
+<!-- PAGE VENTE -->
+<div id="pg-vente" class="pg on">
+  <div class="vente-wrap">
+
+    <!-- FORFAITS -->
+    <div class="forfaits-col">
+      <div id="totalTicketsBar" class="fc-total-bar"></div>
+      <div class="col-label" style="margin-top:8px;">Choisir un forfait</div>
+      <div class="forfaits-grid" id="forfaitsGrid"></div>
+    </div>
+
+    <!-- ACTION -->
+    <div class="action-col">
+      <div class="col-label">Ticket client</div>
+
+      <!-- QR ZONE -->
+      <div class="qr-zone" id="qrZone">
+        <div class="qr-idle-icon">📶</div>
+        <div class="qr-idle-txt">Sélectionner un forfait<br>pour générer le ticket</div>
+      </div>
+
+      <!-- INFOS VENTE (masqué au départ) -->
+      <div class="vente-info" id="venteInfo" style="display:none;">
+        <div class="vi-row"><span class="vi-label">Forfait</span><span class="vi-val" id="viForfait">—</span></div>
+        <div class="vi-row"><span class="vi-label">Code</span><span class="vi-val code-mono" id="viCode">—</span></div>
+        <div class="vi-row" style="margin-top:8px;padding-top:8px;border-top:1px solid var(--bdr);">
+          <span class="vi-label">TOTAL</span>
+          <span class="vi-val vi-total" id="viTotal">0 FCFA</span>
+        </div>
+      </div>
+
+      <!-- PAIEMENT -->
+      <div id="paySection" style="display:none;">
+        <div class="col-label" style="margin-bottom:8px;">Paiement</div>
+        <div class="pay-btns">
+          <button class="pay-btn on" onclick="selPay(this,'espece')">💵 Espèces</button>
+          <button class="pay-btn" onclick="selPay(this,'orange')">🟠 Orange</button>
+          <button class="pay-btn" onclick="selPay(this,'moov')">🔵 Moov</button>
+          <button class="pay-btn" onclick="selPay(this,'autre')">💳 Autre</button>
+        </div>
+      </div>
+
+      <!-- BOUTONS -->
+      <button class="btn-valider" id="btnValider" onclick="validerVente()" disabled>
+        ✅ CONFIRMER LA VENTE
+      </button>
+      <button class="btn-annuler" id="btnAnnuler" onclick="annulerSelection()" style="display:none;">
+        ✕ Annuler
+      </button>
+
+      <!-- NFC -->
+      <div id="nfcSection" style="display:none;">
+        <button class="btn-nfc" id="btnNFC" onclick="lancerNFC()">
+          <span>📲</span> PARTAGER VIA NFC
+        </button>
+        <div class="nfc-hint" id="nfcHint">Approcher les deux téléphones dos à dos</div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- PAGE STOCK -->
+<div id="pg-stock" class="pg">
+  <div class="stock-wrap">
+    <div class="col-label">Stock de tickets par forfait</div>
+
+    <!-- Total global -->
+    <div id="stockGlobalBar" style="margin-bottom:14px;"></div>
+
+    <!-- Sélecteur forfait pour import -->
+    <div class="param-section" style="margin-bottom:12px;">
+      <div class="param-section-title">Importer un CSV de codes</div>
+      <div class="param-row">
+        <label class="param-label">Choisir le forfait associé</label>
+        <select class="param-input" id="importForfaitSel"></select>
+      </div>
+      <div class="drop-area" id="dropArea" onclick="document.getElementById('csvFile').click()" style="margin-bottom:0;">
+        <div class="drop-icon">📂</div>
+        <div class="drop-title">Charger le fichier CSV</div>
+        <div class="drop-sub">Première colonne = codes · .csv ou .txt</div>
+        <input type="file" id="csvFile" accept=".csv,.txt" style="display:none" onchange="onCSVLoad(this)">
+      </div>
+    </div>
+
+    <!-- Stock par forfait -->
+    <div id="stockParForfait"></div>
+
+  </div>
+</div>
+
+<!-- PAGE GESTION FORFAITS -->
+<div id="pg-forfaits" class="pg">
+  <div class="gf-wrap">
+    <div class="gf-toolbar">
+      <div class="col-label" style="margin:0;">Gérer les forfaits</div>
+      <button class="btn-add" onclick="ouvrirModal(null)">＋ Nouveau forfait</button>
+    </div>
+    <div class="gf-list" id="gfList"></div>
+  </div>
+</div>
+
+<!-- MODAL AJOUT/MODIF FORFAIT -->
+<div class="modal-bg" id="modalForfait">
+  <div class="modal-box">
+    <div class="modal-title" id="modalForfaitTitre">Nouveau forfait</div>
+
+    <div class="form-row-2">
+      <div class="form-row">
+        <label class="form-label">Label (ex: 1 Heure)</label>
+        <input class="form-input" id="fLabel" placeholder="1 Heure">
+      </div>
+      <div class="form-row">
+        <label class="form-label">ID unique (ex: 1H)</label>
+        <input class="form-input" id="fId" placeholder="1H">
+      </div>
+    </div>
+
+    <div class="form-row-2">
+      <div class="form-row">
+        <label class="form-label">Durée affichée (ex: 1h)</label>
+        <input class="form-input" id="fUnite" placeholder="1h / 24h / 7 jours">
+      </div>
+      <div class="form-row">
+        <label class="form-label">Débit (ex: 3 Mbps)</label>
+        <input class="form-input" id="fDebit" placeholder="5 Mbps">
+      </div>
+    </div>
+
+    <div class="form-row">
+      <label class="form-label">Prix (FCFA)</label>
+      <input class="form-input" id="fPrix" type="number" placeholder="1000" min="0">
+    </div>
+
+    <div class="form-row">
+      <label class="form-label">Icône</label>
+      <div class="icone-select" id="icoSelect">
+        <div class="ico-opt sel-i" onclick="selIco(this,'⚡')">⚡</div>
+        <div class="ico-opt" onclick="selIco(this,'🌐')">🌐</div>
+        <div class="ico-opt" onclick="selIco(this,'📱')">📱</div>
+        <div class="ico-opt" onclick="selIco(this,'☀️')">☀️</div>
+        <div class="ico-opt" onclick="selIco(this,'📅')">📅</div>
+        <div class="ico-opt" onclick="selIco(this,'🗓️')">🗓️</div>
+        <div class="ico-opt" onclick="selIco(this,'💎')">💎</div>
+        <div class="ico-opt" onclick="selIco(this,'🚀')">🚀</div>
+        <div class="ico-opt" onclick="selIco(this,'🔥')">🔥</div>
+        <div class="ico-opt" onclick="selIco(this,'🎯')">🎯</div>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <label class="form-label">Badge</label>
+      <div class="badge-select">
+        <button class="badge-opt sel-b" onclick="selBadge(this,'')">Aucun</button>
+        <button class="badge-opt" onclick="selBadge(this,'pop')" style="color:var(--rouge);">POP</button>
+        <button class="badge-opt" onclick="selBadge(this,'promo')" style="color:var(--vert);">PROMO</button>
+        <button class="badge-opt" onclick="selBadge(this,'pro')" style="color:var(--or);">PRO</button>
+      </div>
+    </div>
+
+    <div class="modal-btns">
+      <button class="btn-cancel-modal" onclick="fermerModal()">Annuler</button>
+      <button class="btn-save" onclick="sauvegarderForfait()">✓ Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE HISTORIQUE -->
+<div id="pg-histo" class="pg">
+  <div class="histo-wrap">
+    <div class="col-label">Historique des ventes</div>
+
+    <!-- RECETTES -->
+    <div class="recettes-bar" id="recettesBar"></div>
+
+    <div class="histo-filters">
+      <button class="flt on" onclick="filtreHisto('tout',this)">Tout</button>
+      <button class="flt" onclick="filtreHisto('1H',this)">1H</button>
+      <button class="flt" onclick="filtreHisto('3H',this)">3H</button>
+      <button class="flt" onclick="filtreHisto('6H',this)">6H</button>
+      <button class="flt" onclick="filtreHisto('1J',this)">1 Jour</button>
+      <button class="flt" onclick="filtreHisto('3J',this)">3 Jours</button>
+      <button class="flt" onclick="filtreHisto('1S',this)">1 Semaine</button>
+      <button class="flt" onclick="filtreHisto('1M',this)">1 Mois</button>
+      <button class="flt" style="margin-left:auto;border-color:var(--or);color:var(--or);" onclick="exportCSV()">⬇ CSV</button>
+    </div>
+    <div id="histoContent"></div>
+  </div>
+</div>
+
+<!-- PAGE PARAMETRES -->
+<div id="pg-params" class="pg">
+  <div class="param-wrap">
+    <div class="col-label">Paramètres</div>
+
+    <div class="param-section">
+      <div class="param-section-title">🌐 Portail captif MikroTik</div>
+      <div class="param-row">
+        <label class="param-label">IP du hotspot (ex: 192.168.88.1)</label>
+        <input class="param-input" id="paramIP" placeholder="192.168.88.1">
+        <div class="param-hint">L'URL NFC envoyée sera : http://[IP]/login?username=[CODE]&password=[CODE]</div>
+      </div>
+      <div class="param-row">
+        <label class="param-label">Nom du réseau WiFi (affiché sur ticket)</label>
+        <input class="param-input" id="paramSSID" placeholder="Startech WiFi Zone">
+      </div>
+      <div class="param-row">
+        <label class="param-label">Nom de la boutique / point de vente</label>
+        <input class="param-input" id="paramBoutique" placeholder="Startech BUSINESS Barsalogho">
+      </div>
+    </div>
+
+    <div class="param-section">
+      <div class="param-section-title">📲 NFC</div>
+      <div class="param-row">
+        <label class="param-label">Type de lien NFC envoyé au client</label>
+        <select class="param-input" id="paramNFCType">
+          <option value="portail">URL portail captif avec code (connexion auto)</option>
+          <option value="code">Code texte seul (le client tape manuellement)</option>
+        </select>
+        <div class="param-hint">Mode "portail" : le téléphone du client ouvre directement la page de connexion avec le code pré-rempli.</div>
+      </div>
+    </div>
+
+    <div class="param-section">
+      <div class="param-section-title">🗑 Données</div>
+      <div class="param-row">
+        <label class="param-label">Réinitialisation</label>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;">
+          <button class="btn-param-reset" onclick="effacerStock()">Effacer le stock</button>
+          <button class="btn-param-reset" onclick="effacerVentes()">Effacer l'historique</button>
+          <button class="btn-param-reset" onclick="effacerForfaits()">Réinitialiser les forfaits</button>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn-param-save" onclick="sauvegarderParams()">✓ Enregistrer les paramètres</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this.parsedData=[];for(var b=[],d=0,e=this.data.length;e>d;d++){var f=this.data.charCodeAt(d);f>65536?(b[0]=240|(1835008&f)>>>18,b[1]=128|(258048&f)>>>12,b[2]=128|(4032&f)>>>6,b[3]=128|63&f):f>2048?(b[0]=224|(61440&f)>>>12,b[1]=128|(4032&f)>>>6,b[2]=128|63&f):f>128?(b[0]=192|(1984&f)>>>6,b[1]=128|63&f):b[0]=f,this.parsedData=this.parsedData.concat(b)}this.parsedData.length!=this.data.length&&(this.parsedData.unshift(191),this.parsedData.unshift(187),this.parsedData.unshift(239))}function b(a,b){this.typeNumber=a,this.errorCorrectLevel=b,this.modules=null,this.moduleCount=0,this.dataCache=null,this.dataList=[]}function i(a,b){if(void 0==a.length)throw new Error(a.length+"/"+b);for(var c=0;c<a.length&&0==a[c];)c++;this.num=new Array(a.length-c+b);for(var d=0;d<a.length-c;d++)this.num[d]=a[d+c]}function j(a,b){this.totalCount=a,this.dataCount=b}function k(){this.buffer=[],this.length=0}function m(){return"undefined"!=typeof CanvasRenderingContext2D}function n(){var a=!1,b=navigator.userAgent;return/android/i.test(b)&&(a=!0,aMat=b.toString().match(/android ([0-9]\.[0-9])/i),aMat&&aMat[1]&&(a=parseFloat(aMat[1]))),a}function r(a,b){for(var c=1,e=s(a),f=0,g=l.length;g>=f;f++){var h=0;switch(b){case d.L:h=l[f][0];break;case d.M:h=l[f][1];break;case d.Q:h=l[f][2];break;case d.H:h=l[f][3]}if(h>=e)break;c++}if(c>l.length)throw new Error("Too long data");return c}function s(a){var b=encodeURI(a).toString().replace(/\%[0-9a-fA-F]{2}/g,"a");return b.length+(b.length!=a?3:0)}a.prototype={getLength:function(){return this.parsedData.length},write:function(a){for(var b=0,c=this.parsedData.length;c>b;b++)a.put(this.parsedData[b],8)}},b.prototype={addData:function(b){var c=new a(b);this.dataList.push(c),this.dataCache=null},isDark:function(a,b){if(0>a||this.moduleCount<=a||0>b||this.moduleCount<=b)throw new Error(a+","+b);return this.modules[a][b]},getModuleCount:function(){return this.moduleCount},make:function(){this.makeImpl(!1,this.getBestMaskPattern())},makeImpl:function(a,c){this.moduleCount=4*this.typeNumber+17,this.modules=new Array(this.moduleCount);for(var d=0;d<this.moduleCount;d++){this.modules[d]=new Array(this.moduleCount);for(var e=0;e<this.moduleCount;e++)this.modules[d][e]=null}this.setupPositionProbePattern(0,0),this.setupPositionProbePattern(this.moduleCount-7,0),this.setupPositionProbePattern(0,this.moduleCount-7),this.setupPositionAdjustPattern(),this.setupTimingPattern(),this.setupTypeInfo(a,c),this.typeNumber>=7&&this.setupTypeNumber(a),null==this.dataCache&&(this.dataCache=b.createData(this.typeNumber,this.errorCorrectLevel,this.dataList)),this.mapData(this.dataCache,c)},setupPositionProbePattern:function(a,b){for(var c=-1;7>=c;c++)if(!(-1>=a+c||this.moduleCount<=a+c))for(var d=-1;7>=d;d++)-1>=b+d||this.moduleCount<=b+d||(this.modules[a+c][b+d]=c>=0&&6>=c&&(0==d||6==d)||d>=0&&6>=d&&(0==c||6==c)||c>=2&&4>=c&&d>=2&&4>=d?!0:!1)},getBestMaskPattern:function(){for(var a=0,b=0,c=0;8>c;c++){this.makeImpl(!0,c);var d=f.getLostPoint(this);(0==c||a>d)&&(a=d,b=c)}return b},createMovieClip:function(a,b,c){var d=a.createEmptyMovieClip(b,c),e=1;this.make();for(var f=0;f<this.modules.length;f++)for(var g=f*e,h=0;h<this.modules[f].length;h++){var i=h*e,j=this.modules[f][h];j&&(d.beginFill(0,100),d.moveTo(i,g),d.lineTo(i+e,g),d.lineTo(i+e,g+e),d.lineTo(i,g+e),d.endFill())}return d},setupTimingPattern:function(){for(var a=8;a<this.moduleCount-8;a++)null==this.modules[a][6]&&(this.modules[a][6]=0==a%2);for(var b=8;b<this.moduleCount-8;b++)null==this.modules[6][b]&&(this.modules[6][b]=0==b%2)},setupPositionAdjustPattern:function(){for(var a=f.getPatternPosition(this.typeNumber),b=0;b<a.length;b++)for(var c=0;c<a.length;c++){var d=a[b],e=a[c];if(null==this.modules[d][e])for(var g=-2;2>=g;g++)for(var h=-2;2>=h;h++)this.modules[d+g][e+h]=-2==g||2==g||-2==h||2==h||0==g&&0==h?!0:!1}},setupTypeNumber:function(a){for(var b=f.getBCHTypeNumber(this.typeNumber),c=0;18>c;c++){var d=!a&&1==(1&b>>c);this.modules[Math.floor(c/3)][c%3+this.moduleCount-8-3]=d}for(var c=0;18>c;c++){var d=!a&&1==(1&b>>c);this.modules[c%3+this.moduleCount-8-3][Math.floor(c/3)]=d}},setupTypeInfo:function(a,b){for(var c=this.errorCorrectLevel<<3|b,d=f.getBCHTypeInfo(c),e=0;15>e;e++){var g=!a&&1==(1&d>>e);6>e?this.modules[e][8]=g:8>e?this.modules[e+1][8]=g:this.modules[this.moduleCount-15+e][8]=g}for(var e=0;15>e;e++){var g=!a&&1==(1&d>>e);8>e?this.modules[8][this.moduleCount-e-1]=g:9>e?this.modules[8][15-e-1+1]=g:this.modules[8][15-e-1]=g}this.modules[this.moduleCount-8][8]=!a},mapData:function(a,b){for(var c=-1,d=this.moduleCount-1,e=7,g=0,h=this.moduleCount-1;h>0;h-=2)for(6==h&&h--;;){for(var i=0;2>i;i++)if(null==this.modules[d][h-i]){var j=!1;g<a.length&&(j=1==(1&a[g]>>>e));var k=f.getMask(b,d,h-i);k&&(j=!j),this.modules[d][h-i]=j,e--,-1==e&&(g++,e=7)}if(d+=c,0>d||this.moduleCount<=d){d-=c,c=-c;break}}}},b.PAD0=236,b.PAD1=17,b.createData=function(a,c,d){for(var e=j.getRSBlocks(a,c),g=new k,h=0;h<d.length;h++){var i=d[h];g.put(i.mode,4),g.put(i.getLength(),f.getLengthInBits(i.mode,a)),i.write(g)}for(var l=0,h=0;h<e.length;h++)l+=e[h].dataCount;if(g.getLengthInBits()>8*l)throw new Error("code length overflow. ("+g.getLengthInBits()+">"+8*l+")");for(g.getLengthInBits()+4<=8*l&&g.put(0,4);0!=g.getLengthInBits()%8;)g.putBit(!1);for(;;){if(g.getLengthInBits()>=8*l)break;if(g.put(b.PAD0,8),g.getLengthInBits()>=8*l)break;g.put(b.PAD1,8)}return b.createBytes(g,e)},b.createBytes=function(a,b){for(var c=0,d=0,e=0,g=new Array(b.length),h=new Array(b.length),j=0;j<b.length;j++){var k=b[j].dataCount,l=b[j].totalCount-k;d=Math.max(d,k),e=Math.max(e,l),g[j]=new Array(k);for(var m=0;m<g[j].length;m++)g[j][m]=255&a.buffer[m+c];c+=k;var n=f.getErrorCorrectPolynomial(l),o=new i(g[j],n.getLength()-1),p=o.mod(n);h[j]=new Array(n.getLength()-1);for(var m=0;m<h[j].length;m++){var q=m+p.getLength()-h[j].length;h[j][m]=q>=0?p.get(q):0}}for(var r=0,m=0;m<b.length;m++)r+=b[m].totalCount;for(var s=new Array(r),t=0,m=0;d>m;m++)for(var j=0;j<b.length;j++)m<g[j].length&&(s[t++]=g[j][m]);for(var m=0;e>m;m++)for(var j=0;j<b.length;j++)m<h[j].length&&(s[t++]=h[j][m]);return s};for(var c={MODE_NUMBER:1,MODE_ALPHA_NUM:2,MODE_8BIT_BYTE:4,MODE_KANJI:8},d={L:1,M:0,Q:3,H:2},e={PATTERN000:0,PATTERN001:1,PATTERN010:2,PATTERN011:3,PATTERN100:4,PATTERN101:5,PATTERN110:6,PATTERN111:7},f={PATTERN_POSITION_TABLE:[[],[6,18],[6,22],[6,26],[6,30],[6,34],[6,22,38],[6,24,42],[6,26,46],[6,28,50],[6,30,54],[6,32,58],[6,34,62],[6,26,46,66],[6,26,48,70],[6,26,50,74],[6,30,54,78],[6,30,56,82],[6,30,58,86],[6,34,62,90],[6,28,50,72,94],[6,26,50,74,98],[6,30,54,78,102],[6,28,54,80,106],[6,32,58,84,110],[6,30,58,86,114],[6,34,62,90,118],[6,26,50,74,98,122],[6,30,54,78,102,126],[6,26,52,78,104,130],[6,30,56,82,108,134],[6,34,60,86,112,138],[6,30,58,86,114,142],[6,34,62,90,118,146],[6,30,54,78,102,126,150],[6,24,50,76,102,128,154],[6,28,54,80,106,132,158],[6,32,58,84,110,136,162],[6,26,54,82,110,138,166],[6,30,58,86,114,142,170]],G15:1335,G18:7973,G15_MASK:21522,getBCHTypeInfo:function(a){for(var b=a<<10;f.getBCHDigit(b)-f.getBCHDigit(f.G15)>=0;)b^=f.G15<<f.getBCHDigit(b)-f.getBCHDigit(f.G15);return(a<<10|b)^f.G15_MASK},getBCHTypeNumber:function(a){for(var b=a<<12;f.getBCHDigit(b)-f.getBCHDigit(f.G18)>=0;)b^=f.G18<<f.getBCHDigit(b)-f.getBCHDigit(f.G18);return a<<12|b},getBCHDigit:function(a){for(var b=0;0!=a;)b++,a>>>=1;return b},getPatternPosition:function(a){return f.PATTERN_POSITION_TABLE[a-1]},getMask:function(a,b,c){switch(a){case e.PATTERN000:return 0==(b+c)%2;case e.PATTERN001:return 0==b%2;case e.PATTERN010:return 0==c%3;case e.PATTERN011:return 0==(b+c)%3;case e.PATTERN100:return 0==(Math.floor(b/2)+Math.floor(c/3))%2;case e.PATTERN101:return 0==b*c%2+b*c%3;case e.PATTERN110:return 0==(b*c%2+b*c%3)%2;case e.PATTERN111:return 0==(b*c%3+(b+c)%2)%2;default:throw new Error("bad maskPattern:"+a)}},getErrorCorrectPolynomial:function(a){for(var b=new i([1],0),c=0;a>c;c++)b=b.multiply(new i([1,g.gexp(c)],0));return b},getLengthInBits:function(a,b){if(b>=1&&10>b)switch(a){case c.MODE_NUMBER:return 10;case c.MODE_ALPHA_NUM:return 9;case c.MODE_8BIT_BYTE:return 8;case c.MODE_KANJI:return 8;default:throw new Error("mode:"+a)}else if(27>b)switch(a){case c.MODE_NUMBER:return 12;case c.MODE_ALPHA_NUM:return 11;case c.MODE_8BIT_BYTE:return 16;case c.MODE_KANJI:return 10;default:throw new Error("mode:"+a)}else{if(!(41>b))throw new Error("type:"+b);switch(a){case c.MODE_NUMBER:return 14;case c.MODE_ALPHA_NUM:return 13;case c.MODE_8BIT_BYTE:return 16;case c.MODE_KANJI:return 12;default:throw new Error("mode:"+a)}}},getLostPoint:function(a){for(var b=a.getModuleCount(),c=0,d=0;b>d;d++)for(var e=0;b>e;e++){for(var f=0,g=a.isDark(d,e),h=-1;1>=h;h++)if(!(0>d+h||d+h>=b))for(var i=-1;1>=i;i++)0>e+i||e+i>=b||(0!=h||0!=i)&&g==a.isDark(d+h,e+i)&&f++;f>5&&(c+=3+f-5)}for(var d=0;b-1>d;d++)for(var e=0;b-1>e;e++){var j=0;a.isDark(d,e)&&j++,a.isDark(d+1,e)&&j++,a.isDark(d,e+1)&&j++,a.isDark(d+1,e+1)&&j++,(0==j||4==j)&&(c+=3)}for(var d=0;b>d;d++)for(var e=0;b-6>e;e++)a.isDark(d,e)&&!a.isDark(d,e+1)&&a.isDark(d,e+2)&&a.isDark(d,e+3)&&a.isDark(d,e+4)&&!a.isDark(d,e+5)&&a.isDark(d,e+6)&&(c+=40);for(var e=0;b>e;e++)for(var d=0;b-6>d;d++)a.isDark(d,e)&&!a.isDark(d+1,e)&&a.isDark(d+2,e)&&a.isDark(d+3,e)&&a.isDark(d+4,e)&&!a.isDark(d+5,e)&&a.isDark(d+6,e)&&(c+=40);for(var k=0,e=0;b>e;e++)for(var d=0;b>d;d++)a.isDark(d,e)&&k++;var l=Math.abs(100*k/b/b-50)/5;return c+=10*l}},g={glog:function(a){if(1>a)throw new Error("glog("+a+")");return g.LOG_TABLE[a]},gexp:function(a){for(;0>a;)a+=255;for(;a>=256;)a-=255;return g.EXP_TABLE[a]},EXP_TABLE:new Array(256),LOG_TABLE:new Array(256)},h=0;8>h;h++)g.EXP_TABLE[h]=1<<h;for(var h=8;256>h;h++)g.EXP_TABLE[h]=g.EXP_TABLE[h-4]^g.EXP_TABLE[h-5]^g.EXP_TABLE[h-6]^g.EXP_TABLE[h-8];for(var h=0;255>h;h++)g.LOG_TABLE[g.EXP_TABLE[h]]=h;i.prototype={get:function(a){return this.num[a]},getLength:function(){return this.num.length},multiply:function(a){for(var b=new Array(this.getLength()+a.getLength()-1),c=0;c<this.getLength();c++)for(var d=0;d<a.getLength();d++)b[c+d]^=g.gexp(g.glog(this.get(c))+g.glog(a.get(d)));return new i(b,0)},mod:function(a){if(this.getLength()-a.getLength()<0)return this;for(var b=g.glog(this.get(0))-g.glog(a.get(0)),c=new Array(this.getLength()),d=0;d<this.getLength();d++)c[d]=this.get(d);for(var d=0;d<a.getLength();d++)c[d]^=g.gexp(g.glog(a.get(d))+b);return new i(c,0).mod(a)}},j.RS_BLOCK_TABLE=[[1,26,19],[1,26,16],[1,26,13],[1,26,9],[1,44,34],[1,44,28],[1,44,22],[1,44,16],[1,70,55],[1,70,44],[2,35,17],[2,35,13],[1,100,80],[2,50,32],[2,50,24],[4,25,9],[1,134,108],[2,67,43],[2,33,15,2,34,16],[2,33,11,2,34,12],[2,86,68],[4,43,27],[4,43,19],[4,43,15],[2,98,78],[4,49,31],[2,32,14,4,33,15],[4,39,13,1,40,14],[2,121,97],[2,60,38,2,61,39],[4,40,18,2,41,19],[4,40,14,2,41,15],[2,146,116],[3,58,36,2,59,37],[4,36,16,4,37,17],[4,36,12,4,37,13],[2,86,68,2,87,69],[4,69,43,1,70,44],[6,43,19,2,44,20],[6,43,15,2,44,16],[4,101,81],[1,80,50,4,81,51],[4,50,22,4,51,23],[3,36,12,8,37,13],[2,116,92,2,117,93],[6,58,36,2,59,37],[4,46,20,6,47,21],[7,42,14,4,43,15],[4,133,107],[8,59,37,1,60,38],[8,44,20,4,45,21],[12,33,11,4,34,12],[3,145,115,1,146,116],[4,64,40,5,65,41],[11,36,16,5,37,17],[11,36,12,5,37,13],[5,109,87,1,110,88],[5,65,41,5,66,42],[5,54,24,7,55,25],[11,36,12],[5,122,98,1,123,99],[7,73,45,3,74,46],[15,43,19,2,44,20],[3,45,15,13,46,16],[1,135,107,5,136,108],[10,74,46,1,75,47],[1,50,22,15,51,23],[2,42,14,17,43,15],[5,150,120,1,151,121],[9,69,43,4,70,44],[17,50,22,1,51,23],[2,42,14,19,43,15],[3,141,113,4,142,114],[3,70,44,11,71,45],[17,47,21,4,48,22],[9,39,13,16,40,14],[3,135,107,5,136,108],[3,67,41,13,68,42],[15,54,24,5,55,25],[15,43,15,10,44,16],[4,144,116,4,145,117],[17,68,42],[17,50,22,6,51,23],[19,46,16,6,47,17],[2,139,111,7,140,112],[17,74,46],[7,54,24,16,55,25],[34,37,13],[4,151,121,5,152,122],[4,75,47,14,76,48],[11,54,24,14,55,25],[16,45,15,14,46,16],[6,147,117,4,148,118],[6,73,45,14,74,46],[11,54,24,16,55,25],[30,46,16,2,47,17],[8,132,106,4,133,107],[8,75,47,13,76,48],[7,54,24,22,55,25],[22,45,15,13,46,16],[10,142,114,2,143,115],[19,74,46,4,75,47],[28,50,22,6,51,23],[33,46,16,4,47,17],[8,152,122,4,153,123],[22,73,45,3,74,46],[8,53,23,26,54,24],[12,45,15,28,46,16],[3,147,117,10,148,118],[3,73,45,23,74,46],[4,54,24,31,55,25],[11,45,15,31,46,16],[7,146,116,7,147,117],[21,73,45,7,74,46],[1,53,23,37,54,24],[19,45,15,26,46,16],[5,145,115,10,146,116],[19,75,47,10,76,48],[15,54,24,25,55,25],[23,45,15,25,46,16],[13,145,115,3,146,116],[2,74,46,29,75,47],[42,54,24,1,55,25],[23,45,15,28,46,16],[17,145,115],[10,74,46,23,75,47],[10,54,24,35,55,25],[19,45,15,35,46,16],[17,145,115,1,146,116],[14,74,46,21,75,47],[29,54,24,19,55,25],[11,45,15,46,46,16],[13,145,115,6,146,116],[14,74,46,23,75,47],[44,54,24,7,55,25],[59,46,16,1,47,17],[12,151,121,7,152,122],[12,75,47,26,76,48],[39,54,24,14,55,25],[22,45,15,41,46,16],[6,151,121,14,152,122],[6,75,47,34,76,48],[46,54,24,10,55,25],[2,45,15,64,46,16],[17,152,122,4,153,123],[29,74,46,14,75,47],[49,54,24,10,55,25],[24,45,15,46,46,16],[4,152,122,18,153,123],[13,74,46,32,75,47],[48,54,24,14,55,25],[42,45,15,32,46,16],[20,147,117,4,148,118],[40,75,47,7,76,48],[43,54,24,22,55,25],[10,45,15,67,46,16],[19,148,118,6,149,119],[18,75,47,31,76,48],[34,54,24,34,55,25],[20,45,15,61,46,16]],j.getRSBlocks=function(a,b){var c=j.getRsBlockTable(a,b);if(void 0==c)throw new Error("bad rs block @ typeNumber:"+a+"/errorCorrectLevel:"+b);for(var d=c.length/3,e=[],f=0;d>f;f++)for(var g=c[3*f+0],h=c[3*f+1],i=c[3*f+2],k=0;g>k;k++)e.push(new j(h,i));return e},j.getRsBlockTable=function(a,b){switch(b){case d.L:return j.RS_BLOCK_TABLE[4*(a-1)+0];case d.M:return j.RS_BLOCK_TABLE[4*(a-1)+1];case d.Q:return j.RS_BLOCK_TABLE[4*(a-1)+2];case d.H:return j.RS_BLOCK_TABLE[4*(a-1)+3];default:return void 0}},k.prototype={get:function(a){var b=Math.floor(a/8);return 1==(1&this.buffer[b]>>>7-a%8)},put:function(a,b){for(var c=0;b>c;c++)this.putBit(1==(1&a>>>b-c-1))},getLengthInBits:function(){return this.length},putBit:function(a){var b=Math.floor(this.length/8);this.buffer.length<=b&&this.buffer.push(0),a&&(this.buffer[b]|=128>>>this.length%8),this.length++}};var l=[[17,14,11,7],[32,26,20,14],[53,42,32,24],[78,62,46,34],[106,84,60,44],[134,106,74,58],[154,122,86,64],[192,152,108,84],[230,180,130,98],[271,213,151,119],[321,251,177,137],[367,287,203,155],[425,331,241,177],[458,362,258,194],[520,412,292,220],[586,450,322,250],[644,504,364,280],[718,560,394,310],[792,624,442,338],[858,666,482,382],[929,711,509,403],[1003,779,565,439],[1091,857,611,461],[1171,911,661,511],[1273,997,715,535],[1367,1059,751,593],[1465,1125,805,625],[1528,1190,868,658],[1628,1264,908,698],[1732,1370,982,742],[1840,1452,1030,790],[1952,1538,1112,842],[2068,1628,1168,898],[2188,1722,1228,958],[2303,1809,1283,983],[2431,1911,1351,1051],[2563,1989,1423,1093],[2699,2099,1499,1139],[2809,2213,1579,1219],[2953,2331,1663,1273]],o=function(){var a=function(a,b){this._el=a,this._htOption=b};return a.prototype.draw=function(a){function g(a,b){var c=document.createElementNS("http://www.w3.org/2000/svg",a);for(var d in b)b.hasOwnProperty(d)&&c.setAttribute(d,b[d]);return c}var b=this._htOption,c=this._el,d=a.getModuleCount();Math.floor(b.width/d),Math.floor(b.height/d),this.clear();var h=g("svg",{viewBox:"0 0 "+String(d)+" "+String(d),width:"100%",height:"100%",fill:b.colorLight});h.setAttributeNS("http://www.w3.org/2000/xmlns/","xmlns:xlink","http://www.w3.org/1999/xlink"),c.appendChild(h),h.appendChild(g("rect",{fill:b.colorDark,width:"1",height:"1",id:"template"}));for(var i=0;d>i;i++)for(var j=0;d>j;j++)if(a.isDark(i,j)){var k=g("use",{x:String(i),y:String(j)});k.setAttributeNS("http://www.w3.org/1999/xlink","href","#template"),h.appendChild(k)}},a.prototype.clear=function(){for(;this._el.hasChildNodes();)this._el.removeChild(this._el.lastChild)},a}(),p="svg"===document.documentElement.tagName.toLowerCase(),q=p?o:m()?function(){function a(){this._elImage.src=this._elCanvas.toDataURL("image/png"),this._elImage.style.display="block",this._elCanvas.style.display="none"}function d(a,b){var c=this;if(c._fFail=b,c._fSuccess=a,null===c._bSupportDataURI){var d=document.createElement("img"),e=function(){c._bSupportDataURI=!1,c._fFail&&_fFail.call(c)},f=function(){c._bSupportDataURI=!0,c._fSuccess&&c._fSuccess.call(c)};return d.onabort=e,d.onerror=e,d.onload=f,d.src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==",void 0}c._bSupportDataURI===!0&&c._fSuccess?c._fSuccess.call(c):c._bSupportDataURI===!1&&c._fFail&&c._fFail.call(c)}if(this._android&&this._android<=2.1){var b=1/window.devicePixelRatio,c=CanvasRenderingContext2D.prototype.drawImage;CanvasRenderingContext2D.prototype.drawImage=function(a,d,e,f,g,h,i,j){if("nodeName"in a&&/img/i.test(a.nodeName))for(var l=arguments.length-1;l>=1;l--)arguments[l]=arguments[l]*b;else"undefined"==typeof j&&(arguments[1]*=b,arguments[2]*=b,arguments[3]*=b,arguments[4]*=b);c.apply(this,arguments)}}var e=function(a,b){this._bIsPainted=!1,this._android=n(),this._htOption=b,this._elCanvas=document.createElement("canvas"),this._elCanvas.width=b.width,this._elCanvas.height=b.height,a.appendChild(this._elCanvas),this._el=a,this._oContext=this._elCanvas.getContext("2d"),this._bIsPainted=!1,this._elImage=document.createElement("img"),this._elImage.style.display="none",this._el.appendChild(this._elImage),this._bSupportDataURI=null};return e.prototype.draw=function(a){var b=this._elImage,c=this._oContext,d=this._htOption,e=a.getModuleCount(),f=d.width/e,g=d.height/e,h=Math.round(f),i=Math.round(g);b.style.display="none",this.clear();for(var j=0;e>j;j++)for(var k=0;e>k;k++){var l=a.isDark(j,k),m=k*f,n=j*g;c.strokeStyle=l?d.colorDark:d.colorLight,c.lineWidth=1,c.fillStyle=l?d.colorDark:d.colorLight,c.fillRect(m,n,f,g),c.strokeRect(Math.floor(m)+.5,Math.floor(n)+.5,h,i),c.strokeRect(Math.ceil(m)-.5,Math.ceil(n)-.5,h,i)}this._bIsPainted=!0},e.prototype.makeImage=function(){this._bIsPainted&&d.call(this,a)},e.prototype.isPainted=function(){return this._bIsPainted},e.prototype.clear=function(){this._oContext.clearRect(0,0,this._elCanvas.width,this._elCanvas.height),this._bIsPainted=!1},e.prototype.round=function(a){return a?Math.floor(1e3*a)/1e3:a},e}():function(){var a=function(a,b){this._el=a,this._htOption=b};return a.prototype.draw=function(a){for(var b=this._htOption,c=this._el,d=a.getModuleCount(),e=Math.floor(b.width/d),f=Math.floor(b.height/d),g=['<table style="border:0;border-collapse:collapse;">'],h=0;d>h;h++){g.push("<tr>");for(var i=0;d>i;i++)g.push('<td style="border:0;border-collapse:collapse;padding:0;margin:0;width:'+e+"px;height:"+f+"px;background-color:"+(a.isDark(h,i)?b.colorDark:b.colorLight)+';"></td>');g.push("</tr>")}g.push("</table>"),c.innerHTML=g.join("");var j=c.childNodes[0],k=(b.width-j.offsetWidth)/2,l=(b.height-j.offsetHeight)/2;k>0&&l>0&&(j.style.margin=l+"px "+k+"px")},a.prototype.clear=function(){this._el.innerHTML=""},a}();QRCode=function(a,b){if(this._htOption={width:256,height:256,typeNumber:4,colorDark:"#000000",colorLight:"#ffffff",correctLevel:d.H},"string"==typeof b&&(b={text:b}),b)for(var c in b)this._htOption[c]=b[c];"string"==typeof a&&(a=document.getElementById(a)),this._android=n(),this._el=a,this._oQRCode=null,this._oDrawing=new q(this._el,this._htOption),this._htOption.text&&this.makeCode(this._htOption.text)},QRCode.prototype.makeCode=function(a){this._oQRCode=new b(r(a,this._htOption.correctLevel),this._htOption.correctLevel),this._oQRCode.addData(a),this._oQRCode.make(),this._el.title=a,this._oDrawing.draw(this._oQRCode),this.makeImage()},QRCode.prototype.makeImage=function(){"function"==typeof this._oDrawing.makeImage&&(!this._android||this._android>=3)&&this._oDrawing.makeImage()},QRCode.prototype.clear=function(){this._oDrawing.clear()},QRCode.CorrectLevel=d}();</script>
+<script>
+// ====================================================
+// CONFIG FORFAITS
+// ====================================================
+var FORFAITS_DEFAULT_DATA = [
+  { id:"1H",  label:"1 Heure",    unite:"heure",   debit:"3 Mbps",  prix:200,   badge:"",    icone:"⚡" },
+  { id:"3H",  label:"3 Heures",   unite:"heures",  debit:"3 Mbps",  prix:500,   badge:"pop", icone:"🌐" },
+  { id:"6H",  label:"6 Heures",   unite:"heures",  debit:"5 Mbps",  prix:800,   badge:"",    icone:"📱" },
+  { id:"1J",  label:"1 Jour",     unite:"24h",     debit:"5 Mbps",  prix:1000,  badge:"promo",icone:"☀️" },
+  { id:"3J",  label:"3 Jours",    unite:"72h",     debit:"8 Mbps",  prix:2500,  badge:"",    icone:"📅" },
+  { id:"1S",  label:"1 Semaine",  unite:"7 jours", debit:"8 Mbps",  prix:5000,  badge:"",    icone:"🗓️" },
+  { id:"1M",  label:"1 Mois",     unite:"30 jours",debit:"10 Mbps", prix:15000, badge:"pro", icone:"💎" }
+];
+var FORFAITS = JSON.parse(localStorage.getItem("stw_forfaits") || "null") || FORFAITS_DEFAULT_DATA;
+
+// PARAMETRES
+var PARAMS = JSON.parse(localStorage.getItem("stw_params") || "null") || {
+  ip: "192.168.88.1",
+  ssid: "Startech WiFi Zone",
+  boutique: "Startech BUSINESS Barsalogho",
+  nfcType: "portail"
+};
+
+// ====================================================
+// ÉTAT
+// ====================================================
+var stock = JSON.parse(localStorage.getItem("stw_stock") || "[]");
+// stock[i] = { code, forfait, duree, prix, utilise:false }
+
+var ventes = JSON.parse(localStorage.getItem("stw_ventes") || "[]");
+
+var selForfait = null;
+var selCode = null;
+var modePay = "espece";
+
+// ====================================================
+// INIT
+// ====================================================
+function init() {
+  renderForfaits();
+  updateNavStock();
+  renderHisto("tout");
+}
+
+// ====================================================
+// MENU HAMBURGER
+// ====================================================
+function toggleMenu() {
+  var hb = document.getElementById("hamburger");
+  var dd = document.getElementById("navDropdown");
+  hb.classList.toggle("open");
+  dd.classList.toggle("open");
+}
+
+function fermerMenu() {
+  document.getElementById("hamburger").classList.remove("open");
+  document.getElementById("navDropdown").classList.remove("open");
+}
+
+// Fermer si clic hors du menu
+document.addEventListener("click", function(e) {
+  var hb = document.getElementById("hamburger");
+  var dd = document.getElementById("navDropdown");
+  if (!hb.contains(e.target) && !dd.contains(e.target)) {
+    hb.classList.remove("open");
+    dd.classList.remove("open");
+  }
+});
+
+// ====================================================
+// NAV
+// ====================================================
+function goPage(id, btn) {
+  var pgs = document.querySelectorAll(".pg");
+  for (var i = 0; i < pgs.length; i++) pgs[i].classList.remove("on");
+  document.getElementById("pg-" + id).classList.add("on");
+  // Sync tous les boutons de navigation (desktop + dropdown)
+  var tabs = document.querySelectorAll(".tab");
+  for (var j = 0; j < tabs.length; j++) tabs[j].classList.remove("on");
+  // Activer tous les boutons qui correspondent à cette page
+  for (var k = 0; k < tabs.length; k++) {
+    if (tabs[k].getAttribute("onclick") && tabs[k].getAttribute("onclick").indexOf("'" + id + "'") >= 0) {
+      tabs[k].classList.add("on");
+    }
+  }
+  if (id === "histo") { renderRecettes(); renderHisto("tout"); }
+  if (id === "stock") renderStockTable();
+  if (id === "forfaits") renderGF();
+  if (id === "params") chargerParams();
+}
+
+// ====================================================
+// STOCK : INDICATEUR NAV
+// ====================================================
+function updateNavStock() {
+  var total = 0;
+  for (var i = 0; i < stock.length; i++) {
+    if (!stock[i].utilise) total++;
+  }
+  document.getElementById("stockLabel").textContent = total + " ticket(s)";
+  var dot = document.getElementById("stockDot");
+  dot.className = "stock-dot" + (total > 0 ? " ok" : "");
+  renderForfaits();
+}
+
+// ====================================================
+// FORFAITS RENDER
+// ====================================================
+function compterDispo(forfaitId) {
+  var n = 0;
+  for (var i = 0; i < stock.length; i++) {
+    if (!stock[i].utilise && stock[i].forfait === forfaitId) n++;
+  }
+  return n;
+}
+
+function totalTickets() {
+  var n = 0;
+  for (var i = 0; i < stock.length; i++) { if (!stock[i].utilise) n++; }
+  return n;
+}
+
+function renderForfaits() {
+  var total = totalTickets();
+  // Barre total en haut
+  var totalEl = document.getElementById("totalTicketsBar");
+  if (totalEl) {
+    totalEl.textContent = "Stock total : " + total + " ticket(s) disponible(s)";
+    totalEl.className = "fc-total-bar" + (total === 0 ? " zero" : "");
+  }
+
+  var html = "";
+  for (var i = 0; i < FORFAITS.length; i++) {
+    var f = FORFAITS[i];
+    var n = compterDispo(f.id);
+    var epuise = (n === 0 && stock.length > 0);
+    var badgeHtml = "";
+    if (f.badge === "pop") badgeHtml = '<span class="fc-badge bp">POP</span>';
+    else if (f.badge === "promo") badgeHtml = '<span class="fc-badge bv">PROMO</span>';
+    else if (f.badge === "pro") badgeHtml = '<span class="fc-badge bo">PRO</span>';
+
+    var countCls = n === 0 ? "zero" : n <= 5 ? "low" : "ok";
+    var countHtml = '<span class="fc-count ' + countCls + '">' + n + ' ticket' + (n > 1 ? "s" : "") + '</span>';
+
+    var epuiseHtml = epuise ? '<div class="fc-epuise">ÉPUISÉ</div>' : "";
+    var selClass = (selForfait && selForfait.id === f.id) ? " sel" : "";
+
+    html += '<div class="fc' + selClass + '" onclick="selectionForfait(\'' + f.id + '\')">' +
+      '<div class="fc-accent"></div>' +
+      badgeHtml +
+      '<div class="fc-dur">' + f.label + '</div>' +
+      '<div class="fc-unit">' + f.unite + '</div>' +
+      '<div class="fc-speed">&#9650; ' + f.debit + '</div>' +
+      '<div class="fc-prix">' + fmt(f.prix) + ' <span>FCFA</span></div>' +
+      countHtml +
+      epuiseHtml +
+    '</div>';
+  }
+  document.getElementById("forfaitsGrid").innerHTML = html;
+}
+
+// ====================================================
+// SÉLECTION FORFAIT → PIOCHE UN CODE
+// ====================================================
+function selectionForfait(id) {
+  var f = null;
+  for (var i = 0; i < FORFAITS.length; i++) {
+    if (FORFAITS[i].id === id) { f = FORFAITS[i]; break; }
+  }
+  if (!f) return;
+
+  // Pioche le prochain code disponible
+  var code = piocher(id);
+  if (!code) {
+    if (stock.length === 0) {
+      toast("⚠ Aucun stock chargé. Importez un CSV dans Stock CSV.", true);
+    } else {
+      toast("Stock épuisé pour ce forfait !", true);
+    }
+    return;
+  }
+
+  selForfait = f;
+  selCode = code;
+
+  renderForfaits();
+  afficherQR(code, f);
+}
+
+// ====================================================
+// PIOCHE CODE DISPO — strict par forfait
+// ====================================================
+function piocher(forfaitId) {
+  for (var i = 0; i < stock.length; i++) {
+    if (!stock[i].utilise && stock[i].forfait === forfaitId) return stock[i].code;
+  }
+  return null;
+}
+
+function getCodesDispo(forfaitId) {
+  var res = [];
+  for (var i = 0; i < stock.length; i++) {
+    if (!stock[i].utilise && stock[i].forfait === forfaitId) res.push(stock[i].code);
+  }
+  return res;
+}
+
+// ====================================================
+// AFFICHER QR
+// ====================================================
+function afficherQR(code, forfait) {
+  var zone = document.getElementById("qrZone");
+  zone.innerHTML = "";
+
+  var wrap = document.createElement("div");
+  wrap.className = "qr-result";
+
+  var hdr = document.createElement("div");
+  hdr.className = "qr-result-header";
+  hdr.textContent = "📡 STARTECH WiFi Zone · Scannez pour vous connecter";
+  wrap.appendChild(hdr);
+
+  var canvasWrap = document.createElement("div");
+  canvasWrap.className = "qr-canvas-wrap";
+  wrap.appendChild(canvasWrap);
+
+  try {
+    new QRCode(canvasWrap, {
+      text: code,
+      width: 160,
+      height: 160,
+      colorDark: "#000",
+      colorLight: "#fff",
+      correctLevel: QRCode.CorrectLevel.M
+    });
+  } catch(e) {
+    canvasWrap.textContent = "Erreur QR";
+  }
+
+  var codeEl = document.createElement("div");
+  codeEl.className = "qr-code-txt";
+  codeEl.textContent = code;
+  wrap.appendChild(codeEl);
+
+  var fEl = document.createElement("div");
+  fEl.className = "qr-forfait-info";
+  fEl.textContent = forfait.icone + " " + forfait.label + " · " + forfait.debit;
+  wrap.appendChild(fEl);
+
+  var pEl = document.createElement("div");
+  pEl.className = "qr-prix-info";
+  pEl.textContent = fmt(forfait.prix) + " FCFA";
+  wrap.appendChild(pEl);
+
+  zone.appendChild(wrap);
+
+  // Infos + boutons
+  document.getElementById("viForfait").textContent = forfait.label;
+  document.getElementById("viCode").textContent = code;
+  document.getElementById("viTotal").textContent = fmt(forfait.prix) + " FCFA";
+  document.getElementById("venteInfo").style.display = "block";
+  document.getElementById("paySection").style.display = "block";
+  document.getElementById("btnValider").disabled = false;
+  document.getElementById("btnAnnuler").style.display = "block";
+  // Bouton partage : toujours visible
+  var nfcSec = document.getElementById("nfcSection");
+  nfcSec.style.display = "block";
+  document.getElementById("btnNFC").disabled = false;
+  document.getElementById("btnNFC").className = "btn-nfc";
+  // Libellé selon capacité
+  if (location.protocol === "https:" && "NDEFReader" in window) {
+    document.getElementById("btnNFC").innerHTML = "<span>📲</span> PARTAGER VIA NFC";
+    document.getElementById("nfcHint").textContent = "Approcher les deux téléphones dos à dos";
+  } else if ("share" in navigator) {
+    document.getElementById("btnNFC").innerHTML = "<span>📲</span> ENVOYER AU CLIENT";
+    document.getElementById("nfcHint").textContent = "NFC · WhatsApp · SMS · Bluetooth...";
+  } else {
+    document.getElementById("btnNFC").innerHTML = "<span>📋</span> COPIER LE LIEN";
+    document.getElementById("nfcHint").textContent = "Copier l'URL de connexion dans le presse-papier";
+  }
+}
+
+// ====================================================
+// PAIEMENT
+// ====================================================
+function selPay(el, mode) {
+  modePay = mode;
+  var btns = document.querySelectorAll(".pay-btn");
+  for (var i = 0; i < btns.length; i++) btns[i].classList.remove("on");
+  el.classList.add("on");
+}
+
+// ====================================================
+// VALIDER VENTE
+// ====================================================
+function validerVente() {
+  if (!selForfait || !selCode) return;
+
+  // Marquer code comme utilisé dans le stock
+  for (var i = 0; i < stock.length; i++) {
+    if (stock[i].code === selCode) { stock[i].utilise = true; break; }
+  }
+  localStorage.setItem("stw_stock", JSON.stringify(stock));
+
+  // Enregistrer la vente
+  var vente = {
+    id: "V" + Date.now(),
+    date: new Date().toISOString(),
+    forfait: selForfait.id,
+    forfaitLabel: selForfait.label,
+    code: selCode,
+    prix: selForfait.prix,
+    modePay: modePay
+  };
+  ventes.unshift(vente);
+  localStorage.setItem("stw_ventes", JSON.stringify(ventes));
+
+  toast("✅ Vente validée — " + fmt(selForfait.prix) + " FCFA");
+  updateNavStock();
+  resetVente();
+}
+
+// ====================================================
+// ANNULER SÉLECTION
+// ====================================================
+function annulerSelection() {
+  selForfait = null;
+  selCode = null;
+  resetVente();
+}
+
+function resetVente() {
+  selForfait = null;
+  selCode = null;
+  document.getElementById("qrZone").innerHTML = '<div class="qr-idle-icon">📶</div><div class="qr-idle-txt">Sélectionner un forfait<br>pour générer le ticket</div>';
+  document.getElementById("venteInfo").style.display = "none";
+  document.getElementById("paySection").style.display = "none";
+  document.getElementById("btnValider").disabled = true;
+  document.getElementById("btnAnnuler").style.display = "none";
+  document.getElementById("nfcSection").style.display = "none";
+  renderForfaits();
+}
+
+// ====================================================
+// IMPORT CSV
+// ====================================================
+function onCSVLoad(input) {
+  var file = input.files[0];
+  if (!file) return;
+  var forfaitId = document.getElementById("importForfaitSel").value;
+  if (!forfaitId) { toast("Choisir un forfait avant d'importer", true); return; }
+  var reader = new FileReader();
+  reader.onload = function(e) { parseCSV(e.target.result, forfaitId); };
+  reader.readAsText(file, "UTF-8");
+  input.value = "";
+}
+
+var dropArea = document.getElementById("dropArea");
+dropArea.addEventListener("dragover", function(e) { e.preventDefault(); dropArea.classList.add("drag"); });
+dropArea.addEventListener("dragleave", function() { dropArea.classList.remove("drag"); });
+dropArea.addEventListener("drop", function(e) {
+  e.preventDefault(); dropArea.classList.remove("drag");
+  var f = e.dataTransfer.files[0];
+  if (!f) return;
+  var forfaitId = document.getElementById("importForfaitSel").value;
+  if (!forfaitId) { toast("Choisir un forfait avant d'importer", true); return; }
+  var reader = new FileReader();
+  reader.onload = function(ev) { parseCSV(ev.target.result, forfaitId); };
+  reader.readAsText(f, "UTF-8");
+});
+
+function parseCSV(text, forfaitId) {
+  var lines = text.split(/\r?\n/).filter(function(l) { return l.trim() !== ""; });
+  if (lines.length < 1) { toast("Fichier vide", true); return; }
+
+  // Détecter si la première ligne est un header ou un code
+  var firstLine = lines[0].trim().toLowerCase();
+  var startIdx = (firstLine === "code" || firstLine.indexOf("code") === 0) ? 1 : 0;
+
+  var existants = {};
+  for (var k = 0; k < stock.length; k++) existants[stock[k].code] = true;
+
+  var nouveaux = 0;
+  var doublons = 0;
+
+  for (var i = startIdx; i < lines.length; i++) {
+    var cols = splitLine(lines[i]);
+    var code = (cols[0] || "").replace(/"/g, "").trim();
+    if (!code) continue;
+    if (existants[code]) { doublons++; continue; }
+    stock.push({ code: code, forfait: forfaitId, utilise: false });
+    existants[code] = true;
+    nouveaux++;
+  }
+
+  localStorage.setItem("stw_stock", JSON.stringify(stock));
+  updateNavStock();
+  renderStockTable();
+  toast(nouveaux + " codes importés pour " + forfaitId + (doublons > 0 ? " · " + doublons + " doublons ignorés" : ""));
+}
+
+function splitLine(line) {
+  var res = []; var cur = ""; var inQ = false;
+  for (var i = 0; i < line.length; i++) {
+    var c = line[i];
+    if (c === '"') { inQ = !inQ; }
+    else if (c === "," && !inQ) { res.push(cur); cur = ""; }
+    else { cur += c; }
+  }
+  res.push(cur);
+  return res;
+}
+
+// ====================================================
+// RENDER STOCK PAR FORFAIT
+// ====================================================
+function renderStockTable() {
+  // Remplir le select d'import
+  var sel = document.getElementById("importForfaitSel");
+  sel.innerHTML = "";
+  for (var i = 0; i < FORFAITS.length; i++) {
+    var opt = document.createElement("option");
+    opt.value = FORFAITS[i].id;
+    opt.textContent = FORFAITS[i].label + " — " + fmt(FORFAITS[i].prix) + " FCFA";
+    sel.appendChild(opt);
+  }
+
+  var total = totalTickets();
+  var totalUsed = 0;
+  for (var j = 0; j < stock.length; j++) { if (stock[j].utilise) totalUsed++; }
+
+  // Barre globale
+  var gb = document.getElementById("stockGlobalBar");
+  gb.innerHTML = '<div class="total-bar">' +
+    '<span class="total-bar-label">Total disponible</span>' +
+    '<span class="total-bar-val">' + total + ' ticket(s)</span>' +
+  '</div>';
+
+  // Sections par forfait
+  var container = document.getElementById("stockParForfait");
+  var html = "";
+  for (var f = 0; f < FORFAITS.length; f++) {
+    var ff = FORFAITS[f];
+    var codes = [];
+    for (var s = 0; s < stock.length; s++) {
+      if (stock[s].forfait === ff.id) codes.push(stock[s]);
+    }
+    var dispoCodes = codes.filter(function(c) { return !c.utilise; });
+    var usedCodes  = codes.filter(function(c) { return c.utilise; });
+    var nd = dispoCodes.length;
+    var badgeCls = nd === 0 ? "zero" : nd <= 5 ? "low" : "ok";
+    var sectionId = "spf-" + ff.id;
+
+    html += '<div class="spf-section">' +
+      '<div class="spf-header" id="spfh-' + ff.id + '" onclick="toggleSpf(\'' + ff.id + '\')">' +
+        '<div class="spf-left">' +
+          '<span style="font-size:20px;">' + ff.icone + '</span>' +
+          '<span class="spf-name">' + ff.label + '</span>' +
+          '<span class="spf-badge ' + badgeCls + '">' + nd + ' dispo</span>' +
+          (usedCodes.length > 0 ? '<span style="font-size:12px;color:var(--dim);">· ' + usedCodes.length + ' utilisé(s)</span>' : '') +
+        '</div>' +
+        '<span class="spf-chev" id="spfc-' + ff.id + '">&#9660;</span>' +
+      '</div>' +
+      '<div class="spf-body" id="' + sectionId + '">' +
+        '<div class="spf-toolbar">' +
+          '<button class="btn-efface-forfait" onclick="effacerStockForfait(\'' + ff.id + '\')">Effacer ce stock</button>' +
+        '</div>';
+
+    if (codes.length === 0) {
+      html += '<div style="padding:16px;color:var(--dim);font-size:14px;text-align:center;">Aucun code chargé — importez un CSV</div>';
+    } else {
+      html += '<div style="overflow-x:auto;"><table class="stbl">' +
+        '<thead><tr><th>#</th><th>Code</th><th>Statut</th></tr></thead><tbody>';
+      for (var ci = 0; ci < codes.length; ci++) {
+        var co = codes[ci];
+        var stCls = co.utilise ? "st-utilise" : "st-dispo";
+        var stTxt = co.utilise ? "Utilisé" : "Dispo";
+        html += '<tr>' +
+          '<td style="color:var(--dim);font-size:12px;">' + (ci+1) + '</td>' +
+          '<td><span class="code-mono">' + co.code + '</span></td>' +
+          '<td><span class="st-badge ' + stCls + '">' + stTxt + '</span></td>' +
+        '</tr>';
+      }
+      html += '</tbody></table></div>';
+    }
+    html += '</div></div>';
+  }
+  container.innerHTML = html;
+}
+
+function toggleSpf(id) {
+  var body = document.getElementById("spf-" + id);
+  var chev = document.getElementById("spfc-" + id);
+  var hdr  = document.getElementById("spfh-" + id);
+  if (body.classList.contains("show")) {
+    body.classList.remove("show");
+    chev.classList.remove("rot");
+    hdr.classList.remove("expanded");
+  } else {
+    body.classList.add("show");
+    chev.classList.add("rot");
+    hdr.classList.add("expanded");
+  }
+}
+
+function effacerStockForfait(forfaitId) {
+  var label = "";
+  for (var i = 0; i < FORFAITS.length; i++) { if (FORFAITS[i].id === forfaitId) { label = FORFAITS[i].label; break; } }
+  if (!confirm("Effacer tous les codes de \"" + label + "\" ?")) return;
+  var newStock = [];
+  for (var j = 0; j < stock.length; j++) { if (stock[j].forfait !== forfaitId) newStock.push(stock[j]); }
+  stock = newStock;
+  localStorage.setItem("stw_stock", JSON.stringify(stock));
+  updateNavStock();
+  renderStockTable();
+  toast("Stock " + label + " effacé");
+}
+
+// ====================================================
+// HISTORIQUE
+// ====================================================
+function filtreHisto(f, btn) {
+  var btns = document.querySelectorAll(".flt");
+  for (var i = 0; i < btns.length; i++) btns[i].classList.remove("on");
+  if (btn) btn.classList.add("on");
+  renderHisto(f);
+}
+
+function renderHisto(filtre) {
+  var data = ventes.filter(function(v) {
+    return filtre === "tout" ? true : v.forfait === filtre;
+  });
+
+  var el = document.getElementById("histoContent");
+  if (data.length === 0) {
+    el.innerHTML = '<div class="empty"><div class="empty-ico">📭</div><div class="empty-t">Aucune vente</div><div>Les ventes validées apparaîtront ici.</div></div>';
+    return;
+  }
+
+  var html = '<table class="stbl"><thead><tr><th>Date</th><th>Forfait</th><th>Code</th><th>Prix</th><th>Paiement</th></tr></thead><tbody>';
+  for (var i = 0; i < data.length; i++) {
+    var v = data[i];
+    var d = new Date(v.date);
+    var ds = ("0"+d.getDate()).slice(-2)+"/"+("0"+(d.getMonth()+1)).slice(-2)+" "+("0"+d.getHours()).slice(-2)+":"+("0"+d.getMinutes()).slice(-2);
+    html += '<tr>' +
+      '<td style="font-size:11px;">' + ds + '</td>' +
+      '<td>' + v.forfaitLabel + '</td>' +
+      '<td><span class="code-mono">' + v.code + '</span></td>' +
+      '<td style="color:var(--or);font-weight:700;">' + fmt(v.prix) + ' F</td>' +
+      '<td style="font-size:11px;">' + labelPay(v.modePay) + '</td>' +
+    '</tr>';
+  }
+  html += '</tbody></table>';
+  el.innerHTML = html;
+}
+
+function exportCSV() {
+  var csv = "Date,Forfait,Code,Prix,Paiement\n";
+  for (var i = 0; i < ventes.length; i++) {
+    var v = ventes[i];
+    csv += [v.date, v.forfaitLabel, v.code, v.prix, labelPay(v.modePay)].join(",") + "\n";
+  }
+  var blob = new Blob([csv], { type:"text/csv" });
+  var a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "ventes-" + new Date().toISOString().slice(0,10) + ".csv";
+  a.click();
+}
+
+// ====================================================
+// GESTION FORFAITS (CRUD)
+// ====================================================
+
+
+var editIdx = null;
+var selIcone = "⚡";
+var selBadgeVal = "";
+
+function renderGF() {
+  var list = document.getElementById("gfList");
+  if (FORFAITS.length === 0) {
+    list.innerHTML = '<div class="empty"><div class="empty-ico">📋</div><div class="empty-t">Aucun forfait</div><div>Créez votre premier forfait.</div></div>';
+    return;
+  }
+  var html = "";
+  for (var i = 0; i < FORFAITS.length; i++) {
+    var f = FORFAITS[i];
+    var bHtml = "";
+    if (f.badge === "pop") bHtml = '<span class="fc-badge bp">POP</span>';
+    else if (f.badge === "promo") bHtml = '<span class="fc-badge bv">PROMO</span>';
+    else if (f.badge === "pro") bHtml = '<span class="fc-badge bo">PRO</span>';
+    html += '<div class="gf-row">' +
+      '<div class="gf-icone">' + f.icone + '</div>' +
+      '<div class="gf-infos">' +
+        '<div class="gf-label">' + f.label + '</div>' +
+        '<div class="gf-sub">' + f.unite + ' · ID: ' + f.id + '</div>' +
+      '</div>' +
+      '<div class="gf-prix-cell">' + fmt(f.prix) + ' <span>FCFA</span></div>' +
+      '<div class="gf-debit-cell">▲ ' + f.debit + '</div>' +
+      '<div class="gf-badge-cell">' + bHtml + '</div>' +
+      '<div class="gf-actions">' +
+        '<button class="btn-edit" onclick="ouvrirModal(' + i + ')" title="Modifier">✏️</button>' +
+        '<button class="btn-del" onclick="supprimerForfait(' + i + ')" title="Supprimer">🗑</button>' +
+      '</div>' +
+    '</div>';
+  }
+  list.innerHTML = html;
+}
+
+function ouvrirModal(idx) {
+  editIdx = idx;
+  var f = idx !== null ? FORFAITS[idx] : null;
+  document.getElementById("modalForfaitTitre").textContent = f ? "Modifier le forfait" : "Nouveau forfait";
+  document.getElementById("fLabel").value = f ? f.label : "";
+  document.getElementById("fId").value    = f ? f.id    : "";
+  document.getElementById("fUnite").value = f ? f.unite : "";
+  document.getElementById("fDebit").value = f ? f.debit : "";
+  document.getElementById("fPrix").value  = f ? f.prix  : "";
+
+  selIcone = f ? f.icone : "⚡";
+  selBadgeVal = f ? f.badge : "";
+
+  // Reset icônes
+  var icoOpts = document.querySelectorAll(".ico-opt");
+  for (var i = 0; i < icoOpts.length; i++) {
+    icoOpts[i].classList.toggle("sel-i", icoOpts[i].textContent.trim() === selIcone);
+  }
+  // Reset badges
+  var bOpts = document.querySelectorAll(".badge-opt");
+  for (var j = 0; j < bOpts.length; j++) {
+    var bVal = bOpts[j].getAttribute("onclick").indexOf("''") >= 0 ? "" :
+               bOpts[j].getAttribute("onclick").indexOf("'pop'") >= 0 ? "pop" :
+               bOpts[j].getAttribute("onclick").indexOf("'promo'") >= 0 ? "promo" : "pro";
+    bOpts[j].classList.toggle("sel-b", bVal === selBadgeVal);
+  }
+  document.getElementById("modalForfait").classList.add("on");
+  document.getElementById("fLabel").focus();
+}
+
+function fermerModal() {
+  document.getElementById("modalForfait").classList.remove("on");
+  editIdx = null;
+}
+
+function selIco(el, ico) {
+  selIcone = ico;
+  var opts = document.querySelectorAll(".ico-opt");
+  for (var i = 0; i < opts.length; i++) opts[i].classList.remove("sel-i");
+  el.classList.add("sel-i");
+}
+
+function selBadge(el, val) {
+  selBadgeVal = val;
+  var opts = document.querySelectorAll(".badge-opt");
+  for (var i = 0; i < opts.length; i++) opts[i].classList.remove("sel-b");
+  el.classList.add("sel-b");
+}
+
+function sauvegarderForfait() {
+  var label = document.getElementById("fLabel").value.trim();
+  var id    = document.getElementById("fId").value.trim().toUpperCase();
+  var unite = document.getElementById("fUnite").value.trim();
+  var debit = document.getElementById("fDebit").value.trim();
+  var prix  = parseInt(document.getElementById("fPrix").value, 10);
+
+  if (!label || !id || !unite || !debit || isNaN(prix) || prix < 0) {
+    toast("Remplissez tous les champs", true);
+    return;
+  }
+
+  // Vérifier ID unique (sauf si on modifie le même)
+  for (var k = 0; k < FORFAITS.length; k++) {
+    if (FORFAITS[k].id === id && k !== editIdx) {
+      toast("ID déjà utilisé : " + id, true);
+      return;
+    }
+  }
+
+  var f = { id:id, label:label, unite:unite, debit:debit, prix:prix, badge:selBadgeVal, icone:selIcone };
+
+  if (editIdx !== null) {
+    FORFAITS[editIdx] = f;
+    toast("Forfait modifié");
+  } else {
+    FORFAITS.push(f);
+    toast("Forfait ajouté");
+  }
+
+  localStorage.setItem("stw_forfaits", JSON.stringify(FORFAITS));
+  fermerModal();
+  renderGF();
+  renderForfaits();
+}
+
+function supprimerForfait(idx) {
+  var f = FORFAITS[idx];
+  if (!confirm("Supprimer le forfait \"" + f.label + "\" ?")) return;
+  FORFAITS.splice(idx, 1);
+  localStorage.setItem("stw_forfaits", JSON.stringify(FORFAITS));
+  renderGF();
+  renderForfaits();
+  toast("Forfait supprimé");
+}
+
+// Fermer modal en cliquant hors de la boîte
+document.getElementById("modalForfait").addEventListener("click", function(e) {
+  if (e.target === this) fermerModal();
+});
+
+// ====================================================
+// NFC
+// ====================================================
+var nfcAbortCtrl = null;
+
+function lancerNFC() {
+  if (!selCode || !selForfait) return;
+
+  var urlPortail = "http://" + PARAMS.ip + "/login?username=" + selCode + "&password=" + selCode;
+  var contenu = PARAMS.nfcType === "portail" ? urlPortail : selCode;
+  var texte = "🌐 " + (PARAMS.ssid || "Startech WiFi Zone") + "\n📶 Forfait : " + selForfait.label + "\n🔑 Code : " + selCode + "\n🔗 " + urlPortail;
+
+  var btn = document.getElementById("btnNFC");
+  var hint = document.getElementById("nfcHint");
+
+  // CAS 1 : HTTPS + NDEFReader → NFC direct
+  if (location.protocol === "https:" && "NDEFReader" in window) {
+    if (nfcAbortCtrl) { nfcAbortCtrl.abort(); nfcAbortCtrl = null; }
+    nfcAbortCtrl = new AbortController();
+    btn.className = "btn-nfc nfc-active";
+    btn.innerHTML = "<span>📲</span> APPROCHER LE TÉLÉPHONE CLIENT...";
+    hint.textContent = "Dos à dos — en attente...";
+    var ndef = new NDEFReader();
+    ndef.write(
+      { records: [{ recordType: "url", data: contenu }] },
+      { signal: nfcAbortCtrl.signal }
+    ).then(function() {
+      btn.className = "btn-nfc";
+      btn.innerHTML = "<span>✅</span> TICKET NFC ENVOYÉ";
+      hint.textContent = "Le client peut se connecter";
+      setTimeout(function() {
+        btn.innerHTML = "<span>📲</span> PARTAGER VIA NFC";
+        hint.textContent = "Approcher les deux téléphones dos à dos";
+      }, 3000);
+    }).catch(function(err) {
+      btn.className = "btn-nfc";
+      btn.innerHTML = "<span>📲</span> PARTAGER VIA NFC";
+      if (err.name !== "AbortError") {
+        hint.textContent = "Erreur : " + err.message;
+      }
+    });
+    return;
+  }
+
+  // CAS 2 : navigator.share → menu natif Android (NFC, WhatsApp, SMS, Bluetooth...)
+  if ("share" in navigator) {
+    btn.className = "btn-nfc nfc-active";
+    btn.innerHTML = "<span>📲</span> OUVERTURE DU MENU...";
+    navigator.share({
+      title: "Ticket WiFi " + selForfait.label,
+      text: texte,
+      url: contenu
+    }).then(function() {
+      btn.className = "btn-nfc";
+      btn.innerHTML = "<span>✅</span> ENVOYÉ";
+      hint.textContent = "Le client peut se connecter";
+      setTimeout(function() {
+        btn.innerHTML = "<span>📲</span> ENVOYER AU CLIENT";
+        hint.textContent = "NFC · WhatsApp · SMS · Bluetooth...";
+      }, 2500);
+    }).catch(function(err) {
+      btn.className = "btn-nfc";
+      btn.innerHTML = "<span>📲</span> ENVOYER AU CLIENT";
+      if (err.name !== "AbortError") hint.textContent = "Partage annulé";
+    });
+    return;
+  }
+
+  // CAS 3 : clipboard fallback
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(texte).then(function() {
+      btn.innerHTML = "<span>✅</span> LIEN COPIÉ";
+      hint.textContent = "Coller dans WhatsApp ou SMS";
+      setTimeout(function() {
+        btn.innerHTML = "<span>📋</span> COPIER LE LIEN";
+        hint.textContent = "Copier l'URL de connexion dans le presse-papier";
+      }, 2500);
+    });
+    return;
+  }
+
+  // CAS 4 : sélection manuelle
+  var temp = document.createElement("textarea");
+  temp.value = texte;
+  document.body.appendChild(temp);
+  temp.select();
+  document.execCommand("copy");
+  document.body.removeChild(temp);
+  hint.textContent = "Copié ! Coller dans WhatsApp ou SMS.";
+}
+
+// ====================================================
+// RECETTES
+// ====================================================
+function renderRecettes() {
+  var auj = new Date(); auj.setHours(0,0,0,0);
+  var moisD = new Date(auj.getFullYear(), auj.getMonth(), 1);
+  var rJour = 0, rMois = 0, rTotal = 0;
+  for (var i = 0; i < ventes.length; i++) {
+    var v = ventes[i];
+    var d = new Date(v.date);
+    rTotal += v.prix;
+    if (d >= moisD) rMois += v.prix;
+    if (d >= auj) rJour += v.prix;
+  }
+  var el = document.getElementById("recettesBar");
+  el.innerHTML =
+    '<div class="rb-card"><div class="rb-val">' + fmt(rJour) + ' F</div><div class="rb-label">Aujourd\'hui</div></div>' +
+    '<div class="rb-card"><div class="rb-val">' + fmt(rMois) + ' F</div><div class="rb-label">Ce mois</div></div>' +
+    '<div class="rb-card"><div class="rb-val">' + fmt(rTotal) + ' F</div><div class="rb-label">Total</div></div>';
+}
+
+// ====================================================
+// PARAMETRES
+// ====================================================
+function chargerParams() {
+  document.getElementById("paramIP").value       = PARAMS.ip;
+  document.getElementById("paramSSID").value     = PARAMS.ssid;
+  document.getElementById("paramBoutique").value = PARAMS.boutique;
+  document.getElementById("paramNFCType").value  = PARAMS.nfcType;
+}
+
+function sauvegarderParams() {
+  PARAMS.ip       = document.getElementById("paramIP").value.trim() || "192.168.88.1";
+  PARAMS.ssid     = document.getElementById("paramSSID").value.trim() || "Startech WiFi Zone";
+  PARAMS.boutique = document.getElementById("paramBoutique").value.trim() || "Startech BUSINESS";
+  PARAMS.nfcType  = document.getElementById("paramNFCType").value;
+  localStorage.setItem("stw_params", JSON.stringify(PARAMS));
+  toast("Paramètres enregistrés");
+}
+
+function effacerStock() {
+  if (!confirm("Effacer tout le stock ?")) return;
+  stock = []; localStorage.removeItem("stw_stock");
+  updateNavStock(); renderStockTable(); toast("Stock effacé");
+}
+
+function effacerVentes() {
+  if (!confirm("Effacer tout l'historique des ventes ?")) return;
+  ventes = []; localStorage.removeItem("stw_ventes");
+  renderHisto("tout"); renderRecettes(); toast("Historique effacé");
+}
+
+function effacerForfaits() {
+  if (!confirm("Réinitialiser les forfaits par défaut ?")) return;
+  FORFAITS = FORFAITS_DEFAULT_DATA.slice();
+  localStorage.removeItem("stw_forfaits");
+  renderGF(); renderForfaits(); toast("Forfaits réinitialisés");
+}
+
+// ====================================================
+// UTILITAIRES
+// ====================================================
+function fmt(n) { return (n+"").replace(/\B(?=(\d{3})+(?!\d))/g, " "); }
+
+function labelPay(m) {
+  var l = { espece:"Espèces", orange:"Orange Money", moov:"Moov Money", autre:"Autre" };
+  return l[m] || m;
+}
+
+function toast(msg, err) {
+  var t = document.getElementById("toast");
+  t.textContent = msg;
+  t.className = "toast on" + (err ? " err" : "");
+  clearTimeout(t._t);
+  t._t = setTimeout(function() { t.className = "toast"; }, 3000);
+}
+
+// ====================================================
+init();
+</script>
+</body>
+</html>

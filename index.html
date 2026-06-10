@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Startech WiFi Zone</title>
+<title>Vente PRO</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap');
 
@@ -22,7 +22,7 @@
 }
 
 * { margin:0; padding:0; box-sizing:border-box; }
-body { font-family:"Inter",sans-serif; background:var(--noir); color:var(--txt); min-height:100vh; font-size:16px; }
+body { font-family:"Inter",sans-serif; background:var(--noir); color:var(--txt); min-height:100vh; font-size:12px; }
 
 /* NAV */
 .nav {
@@ -33,17 +33,17 @@ body { font-family:"Inter",sans-serif; background:var(--noir); color:var(--txt);
 }
 .nav-logo { display:flex; align-items:center; gap:8px; flex:1; min-width:0; }
 .nav-logo-icon {
-  width:32px; height:32px; border-radius:8px; flex-shrink:0;
+  width:34px; height:34px; border-radius:8px; flex-shrink:0;
   background:linear-gradient(135deg,var(--rouge),#a01);
-  display:flex; align-items:center; justify-content:center; font-size:19px;
+  display:flex; align-items:center; justify-content:center; font-size:12px;
 }
-.nav-logo-text { font-size:19px; font-weight:700; white-space:nowrap; }
-.nav-logo-sub { font-size:19px; color:var(--or); letter-spacing:2px; text-transform:uppercase; }
+.nav-logo-text { font-size:12px; font-weight:700; white-space:nowrap; }
+.nav-logo-sub { font-size:9px; color:var(--or); letter-spacing:2px; text-transform:uppercase; }
 
 /* HAMBURGER */
 .hamburger {
   display:none; flex-direction:column; justify-content:center; align-items:center;
-  gap:5px; width:38px; height:38px; border-radius:8px;
+  gap:5px; width:40px; height:40px; border-radius:8px;
   border:1px solid var(--bdr); background:var(--g3);
   cursor:pointer; flex-shrink:0;
 }
@@ -55,8 +55,8 @@ body { font-family:"Inter",sans-serif; background:var(--noir); color:var(--txt);
 /* TABS desktop */
 .nav-tabs { display:flex; gap:2px; flex-shrink:0; }
 .tab {
-  padding:6px 13px; border:none; background:transparent;
-  color:var(--dim); font-size:21px; font-weight:500;
+  padding:6px 12px; border:none; background:transparent;
+  color:var(--dim); font-size:12px; font-weight:500;
   cursor:pointer; border-radius:6px; font-family:"Inter",sans-serif;
   transition:all 0.15s; white-space:nowrap;
 }
@@ -72,17 +72,29 @@ body { font-family:"Inter",sans-serif; background:var(--noir); color:var(--txt);
 }
 .nav-dropdown.open { display:flex; }
 .nav-dropdown .tab {
-  padding:13px 16px; border-radius:8px; font-size:17px;
+  padding:14px 16px; border-radius:8px; font-size:12px;
   text-align:left; display:flex; align-items:center; gap:10px;
 }
 
+/* Info bar dans le dropdown */
+.nav-info-bar {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:10px 14px; margin-bottom:4px;
+  background:var(--g2); border-radius:8px; border:1px solid var(--bdr);
+}
+.nav-info-left { display:flex; align-items:center; gap:8px; font-size:12px; }
+.nav-info-right { display:flex; align-items:center; gap:8px; }
+
+/* Desktop info bar */
+.nav-desktop-info { display:flex; align-items:center; gap:8px; flex-shrink:0; }
+
 .nav-stock {
-  font-size:17px; color:var(--dim);
+  font-size:12px; color:var(--dim);
   background:var(--g3); border:1px solid var(--bdr);
   padding:4px 9px; border-radius:20px;
   display:flex; align-items:center; gap:5px; flex-shrink:0; white-space:nowrap;
 }
-.stock-dot { width:6px; height:6px; border-radius:50%; background:var(--dim); }
+.stock-dot { width:7px; height:7px; border-radius:50%; background:var(--dim); }
 .stock-dot.ok { background:var(--vert); }
 
 .pg { display:none; }
@@ -91,54 +103,54 @@ body { font-family:"Inter",sans-serif; background:var(--noir); color:var(--txt);
 /* VENTE */
 .vente-wrap { display:grid; grid-template-columns:1fr 300px; min-height:calc(100vh - 52px); }
 .forfaits-col { padding:16px; border-right:1px solid var(--bdr); overflow-y:auto; }
-.col-label { font-size:19px; letter-spacing:2px; text-transform:uppercase; color:var(--dim); margin-bottom:12px; padding-bottom:8px; border-bottom:1px solid var(--bdr); }
+.col-label { font-size:12px; letter-spacing:2px; text-transform:uppercase; color:var(--dim); margin-bottom:12px; padding-bottom:8px; border-bottom:1px solid var(--bdr); }
 .forfaits-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:8px; }
 .fc { background:var(--g2); border:1px solid var(--bdr); border-radius:10px; padding:12px; cursor:pointer; transition:all 0.15s; position:relative; overflow:hidden; }
 .fc:hover { border-color:var(--or); transform:translateY(-2px); }
 .fc.sel { border-color:var(--vert); background:rgba(0,154,68,.1); }
 .fc-accent { position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,var(--rouge),var(--or)); }
-.fc-dur { font-size:21px; font-weight:700; font-family:"JetBrains Mono",monospace; color:var(--or); line-height:1.2; }
-.fc-unit { font-size:19px; color:var(--dim); text-transform:uppercase; letter-spacing:1px; margin-top:2px; }
-.fc-speed { font-size:17px; color:var(--vert); margin-top:6px; }
-.fc-prix { font-size:21px; font-weight:700; margin-top:6px; }
-.fc-prix span { font-size:19px; font-weight:400; color:var(--dim); }
+.fc-dur { font-size:12px; font-weight:700; font-family:"JetBrains Mono",monospace; color:var(--or); line-height:1.2; }
+.fc-unit { font-size:12px; color:var(--dim); text-transform:uppercase; letter-spacing:1px; margin-top:2px; }
+.fc-speed { font-size:12px; color:var(--vert); margin-top:6px; }
+.fc-prix { font-size:12px; font-weight:700; margin-top:6px; }
+.fc-prix span { font-size:12px; font-weight:400; color:var(--dim); }
 .fc-badge { position:absolute; top:6px; right:6px; font-size:8px; padding:2px 5px; border-radius:3px; font-weight:700; letter-spacing:.5px; }
 .bp { background:var(--rouge); color:#fff; }
 .bv { background:var(--vert); color:#fff; }
 .bo { background:var(--or); color:#000; }
-.fc-epuise { position:absolute; inset:0; background:rgba(10,10,10,.7); display:flex; align-items:center; justify-content:center; font-size:17px; color:var(--rouge); font-weight:700; letter-spacing:1px; text-transform:uppercase; border-radius:9px; }
+.fc-epuise { position:absolute; inset:0; background:rgba(10,10,10,.7); display:flex; align-items:center; justify-content:center; font-size:12px; color:var(--rouge); font-weight:700; letter-spacing:1px; text-transform:uppercase; border-radius:9px; }
 .action-col { background:var(--g1); padding:16px; display:flex; flex-direction:column; gap:12px; overflow-y:auto; }
 .qr-zone { background:var(--g2); border:1px solid var(--bdr); border-radius:12px; padding:16px; text-align:center; min-height:220px; display:flex; flex-direction:column; align-items:center; justify-content:center; }
 .qr-idle-icon { font-size:44px; margin-bottom:10px; opacity:.3; }
-.qr-idle-txt { font-size:19px; color:var(--dim); line-height:1.5; }
+.qr-idle-txt { font-size:12px; color:var(--dim); line-height:1.5; }
 .qr-result { width:100%; }
-.qr-result-header { font-size:19px; letter-spacing:1.5px; text-transform:uppercase; color:var(--dim); margin-bottom:10px; }
+.qr-result-header { font-size:12px; letter-spacing:1.5px; text-transform:uppercase; color:var(--dim); margin-bottom:10px; }
 .qr-canvas-wrap { background:#fff; border-radius:10px; padding:10px; display:inline-flex; margin-bottom:10px; }
-.qr-code-txt { font-family:"JetBrains Mono",monospace; font-size:21px; font-weight:700; letter-spacing:3px; color:var(--or); margin-bottom:4px; }
-.qr-forfait-info { font-size:21px; color:var(--vert); margin-bottom:3px; }
-.qr-prix-info { font-size:17px; color:var(--dim); }
-.btn-valider { width:100%; padding:13px; border:none; border-radius:9px; background:linear-gradient(135deg,var(--rouge),#b01); color:#fff; font-size:17px; font-weight:700; cursor:pointer; font-family:"Inter",sans-serif; transition:all 0.2s; letter-spacing:.3px; }
+.qr-code-txt { font-family:"JetBrains Mono",monospace; font-size:12px; font-weight:700; letter-spacing:3px; color:var(--or); margin-bottom:4px; }
+.qr-forfait-info { font-size:12px; color:var(--vert); margin-bottom:3px; }
+.qr-prix-info { font-size:12px; color:var(--dim); }
+.btn-valider { width:100%; padding:13px; border:none; border-radius:9px; background:linear-gradient(135deg,var(--rouge),#b01); color:#fff; font-size:12px; font-weight:700; cursor:pointer; font-family:"Inter",sans-serif; transition:all 0.2s; letter-spacing:.3px; }
 .btn-valider:hover { opacity:.85; transform:translateY(-1px); }
 .btn-valider:disabled { opacity:.3; cursor:not-allowed; transform:none; }
-.btn-annuler { width:100%; padding:10px; border:1px solid var(--bdr); border-radius:9px; background:transparent; color:var(--dim); font-size:21px; cursor:pointer; font-family:"Inter",sans-serif; transition:all .15s; }
+.btn-annuler { width:100%; padding:10px; border:1px solid var(--bdr); border-radius:9px; background:transparent; color:var(--dim); font-size:12px; cursor:pointer; font-family:"Inter",sans-serif; transition:all .15s; }
 .btn-annuler:hover { color:var(--txt); border-color:var(--g4); }
-.vente-info { background:var(--g3); border-radius:9px; padding:12px; font-size:21px; }
+.vente-info { background:var(--g3); border-radius:9px; padding:12px; font-size:12px; }
 .vi-row { display:flex; justify-content:space-between; margin-bottom:5px; }
 .vi-row:last-child { margin-bottom:0; }
 .vi-label { color:var(--dim); }
 .vi-val { font-weight:600; }
-.vi-total { color:var(--or); font-size:19px; font-family:"JetBrains Mono",monospace; }
+.vi-total { color:var(--or); font-size:12px; font-family:"JetBrains Mono",monospace; }
 .pay-btns { display:grid; grid-template-columns:1fr 1fr; gap:6px; }
-.pay-btn { padding:8px 6px; border:1px solid var(--bdr); background:var(--g3); color:var(--dim); border-radius:7px; font-size:17px; cursor:pointer; text-align:center; transition:all .15s; font-family:"Inter",sans-serif; }
+.pay-btn { padding:8px 6px; border:1px solid var(--bdr); background:var(--g3); color:var(--dim); border-radius:7px; font-size:12px; cursor:pointer; text-align:center; transition:all .15s; font-family:"Inter",sans-serif; }
 .pay-btn.on { border-color:var(--or); color:var(--or); background:rgba(252,209,22,.07); }
 
 /* NFC */
-.btn-nfc { width:100%; padding:13px; border:2px solid var(--or); border-radius:9px; background:rgba(252,209,22,.07); color:var(--or); font-size:19px; font-weight:700; cursor:pointer; font-family:"Inter",sans-serif; transition:all 0.2s; display:flex; align-items:center; justify-content:center; gap:8px; }
+.btn-nfc { width:100%; padding:13px; border:2px solid var(--or); border-radius:9px; background:rgba(252,209,22,.07); color:var(--or); font-size:12px; font-weight:700; cursor:pointer; font-family:"Inter",sans-serif; transition:all 0.2s; display:flex; align-items:center; justify-content:center; gap:8px; }
 .btn-nfc:hover { background:rgba(252,209,22,.15); }
 .btn-nfc.nfc-active { background:var(--or); color:#000; animation:nfc-pulse 1s infinite; }
 .btn-nfc:disabled { opacity:.3; cursor:not-allowed; }
 @keyframes nfc-pulse { 0%,100% { box-shadow:0 0 0 0 rgba(252,209,22,.5); } 50% { box-shadow:0 0 0 10px rgba(252,209,22,0); } }
-.nfc-hint { font-size:17px; color:var(--dim); text-align:center; margin-top:4px; }
+.nfc-hint { font-size:12px; color:var(--dim); text-align:center; margin-top:4px; }
 
 /* STOCK */
 .stock-wrap { padding:16px; max-width:860px; margin:0 auto; }
@@ -146,64 +158,64 @@ body { font-family:"Inter",sans-serif; background:var(--noir); color:var(--txt);
 .drop-area.drag { border-color:var(--or); background:rgba(252,209,22,.04); }
 .drop-area:hover { border-color:var(--g4); }
 .drop-icon { font-size:36px; margin-bottom:8px; }
-.drop-title { font-size:17px; font-weight:600; margin-bottom:4px; }
-.drop-sub { font-size:21px; color:var(--dim); }
-.format-hint { background:var(--g2); border:1px solid var(--bdr); border-radius:10px; padding:12px 14px; font-size:21px; color:var(--dim); margin-bottom:14px; line-height:1.7; }
-.format-hint code { font-family:"JetBrains Mono",monospace; color:var(--or); font-size:17px; background:var(--noir); padding:2px 5px; border-radius:3px; }
+.drop-title { font-size:12px; font-weight:600; margin-bottom:4px; }
+.drop-sub { font-size:12px; color:var(--dim); }
+.format-hint { background:var(--g2); border:1px solid var(--bdr); border-radius:10px; padding:12px 14px; font-size:12px; color:var(--dim); margin-bottom:14px; line-height:1.7; }
+.format-hint code { font-family:"JetBrains Mono",monospace; color:var(--or); font-size:12px; background:var(--noir); padding:2px 5px; border-radius:3px; }
 .stock-table-wrap { overflow-x:auto; }
-.stbl { width:100%; border-collapse:collapse; font-size:19px; }
-.stbl th { text-align:left; padding:9px 10px; font-size:19px; letter-spacing:1.5px; text-transform:uppercase; color:var(--dim); border-bottom:1px solid var(--bdr); }
+.stbl { width:100%; border-collapse:collapse; font-size:12px; }
+.stbl th { text-align:left; padding:9px 10px; font-size:12px; letter-spacing:1.5px; text-transform:uppercase; color:var(--dim); border-bottom:1px solid var(--bdr); }
 .stbl td { padding:10px; border-bottom:1px solid rgba(42,42,42,.5); }
 .stbl tr:hover td { background:rgba(255,255,255,.02); }
-.code-mono { font-family:"JetBrains Mono",monospace; font-size:21px; color:var(--or); }
-.st-badge { padding:3px 8px; border-radius:4px; font-size:19px; font-weight:600; }
+.code-mono { font-family:"JetBrains Mono",monospace; font-size:12px; color:var(--or); }
+.st-badge { padding:3px 8px; border-radius:4px; font-size:12px; font-weight:600; }
 .st-dispo { background:rgba(0,154,68,.2); color:var(--vert); }
 .st-utilise { background:rgba(136,136,136,.2); color:var(--dim); }
 .stock-stats { display:grid; grid-template-columns:repeat(auto-fill,minmax(110px,1fr)); gap:8px; margin-bottom:14px; }
 .ss-card { background:var(--g2); border:1px solid var(--bdr); border-radius:10px; padding:12px; text-align:center; }
-.ss-val { font-size:24px; font-weight:700; font-family:"JetBrains Mono",monospace; color:var(--or); }
-.ss-label { font-size:19px; color:var(--dim); text-transform:uppercase; letter-spacing:1px; margin-top:4px; }
+.ss-val { font-size:12px; font-weight:700; font-family:"JetBrains Mono",monospace; color:var(--or); }
+.ss-label { font-size:12px; color:var(--dim); text-transform:uppercase; letter-spacing:1px; margin-top:4px; }
 
 /* HISTO */
 .histo-wrap { padding:16px; max-width:860px; margin:0 auto; }
 .histo-filters { display:flex; gap:6px; margin-bottom:12px; flex-wrap:wrap; }
-.flt { padding:5px 11px; border:1px solid var(--bdr); border-radius:6px; background:transparent; color:var(--dim); font-size:17px; cursor:pointer; font-family:"Inter",sans-serif; transition:all .15s; }
+.flt { padding:5px 11px; border:1px solid var(--bdr); border-radius:6px; background:transparent; color:var(--dim); font-size:12px; cursor:pointer; font-family:"Inter",sans-serif; transition:all .15s; }
 .flt.on { background:var(--rouge); border-color:var(--rouge); color:#fff; }
 .recettes-bar { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:12px; }
 .rb-card { background:var(--g2); border:1px solid var(--bdr); border-radius:9px; padding:10px; text-align:center; }
-.rb-val { font-size:19px; font-weight:700; color:var(--or); font-family:"JetBrains Mono",monospace; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-.rb-label { font-size:19px; color:var(--dim); text-transform:uppercase; letter-spacing:1px; margin-top:3px; }
+.rb-val { font-size:12px; font-weight:700; color:var(--or); font-family:"JetBrains Mono",monospace; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.rb-label { font-size:12px; color:var(--dim); text-transform:uppercase; letter-spacing:1px; margin-top:3px; }
 
 /* PARAMS */
 .param-wrap { padding:16px; max-width:560px; margin:0 auto; }
 .param-section { background:var(--g2); border:1px solid var(--bdr); border-radius:12px; padding:16px; margin-bottom:12px; }
-.param-section-title { font-size:17px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--dim); margin-bottom:12px; padding-bottom:8px; border-bottom:1px solid var(--bdr); }
+.param-section-title { font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--dim); margin-bottom:12px; padding-bottom:8px; border-bottom:1px solid var(--bdr); }
 .param-row { margin-bottom:10px; }
-.param-label { font-size:17px; color:var(--dim); margin-bottom:5px; display:block; }
-.param-input { width:100%; padding:9px 12px; background:var(--g3); border:1px solid var(--bdr); border-radius:7px; color:var(--txt); font-size:19px; font-family:"Inter",sans-serif; transition:border-color .15s; }
+.param-label { font-size:12px; color:var(--dim); margin-bottom:5px; display:block; }
+.param-input { width:100%; padding:9px 12px; background:var(--g3); border:1px solid var(--bdr); border-radius:7px; color:var(--txt); font-size:12px; font-family:"Inter",sans-serif; transition:border-color .15s; }
 .param-input:focus { outline:none; border-color:var(--or); }
-.param-hint { font-size:17px; color:var(--dim); margin-top:4px; }
-.btn-param-save { padding:9px 20px; background:var(--vert); border:none; border-radius:8px; color:#fff; font-size:19px; font-weight:700; cursor:pointer; font-family:"Inter",sans-serif; transition:opacity .15s; }
+.param-hint { font-size:12px; color:var(--dim); margin-top:4px; }
+.btn-param-save { padding:9px 20px; background:var(--vert); border:none; border-radius:8px; color:#fff; font-size:12px; font-weight:700; cursor:pointer; font-family:"Inter",sans-serif; transition:opacity .15s; }
 .btn-param-save:hover { opacity:.85; }
-.btn-param-reset { padding:9px 16px; background:transparent; border:1px solid var(--bdr); border-radius:8px; color:var(--dim); font-size:21px; cursor:pointer; font-family:"Inter",sans-serif; transition:all .15s; margin-left:8px; }
+.btn-param-reset { padding:9px 16px; background:transparent; border:1px solid var(--bdr); border-radius:8px; color:var(--dim); font-size:12px; cursor:pointer; font-family:"Inter",sans-serif; transition:all .15s; margin-left:8px; }
 .btn-param-reset:hover { color:var(--rouge); border-color:var(--rouge); }
 
 /* FORFAITS GESTION */
 .gf-wrap { padding:16px; max-width:780px; margin:0 auto; }
 .gf-toolbar { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; }
-.btn-add { padding:8px 14px; background:var(--vert); border:none; border-radius:8px; color:#fff; font-size:19px; font-weight:700; cursor:pointer; font-family:"Inter",sans-serif; transition:opacity .15s; display:flex; align-items:center; gap:6px; }
+.btn-add { padding:8px 14px; background:var(--vert); border:none; border-radius:8px; color:#fff; font-size:12px; font-weight:700; cursor:pointer; font-family:"Inter",sans-serif; transition:opacity .15s; display:flex; align-items:center; gap:6px; }
 .btn-add:hover { opacity:.85; }
 .gf-list { display:flex; flex-direction:column; gap:8px; }
 .gf-row { background:var(--g2); border:1px solid var(--bdr); border-radius:10px; padding:12px 14px; display:grid; grid-template-columns:28px 1fr auto auto; align-items:center; gap:10px; transition:border-color .15s; }
 .gf-row:hover { border-color:var(--g4); }
-.gf-icone { font-size:24px; text-align:center; }
+.gf-icone { font-size:12px; text-align:center; }
 .gf-infos { min-width:0; }
-.gf-label { font-size:19px; font-weight:700; }
-.gf-sub { font-size:17px; color:var(--dim); margin-top:1px; }
-.gf-prix-cell { font-size:21px; font-weight:700; color:var(--or); font-family:"JetBrains Mono",monospace; white-space:nowrap; }
-.gf-prix-cell span { font-size:19px; font-weight:400; color:var(--dim); }
+.gf-label { font-size:12px; font-weight:700; }
+.gf-sub { font-size:12px; color:var(--dim); margin-top:1px; }
+.gf-prix-cell { font-size:12px; font-weight:700; color:var(--or); font-family:"JetBrains Mono",monospace; white-space:nowrap; }
+.gf-prix-cell span { font-size:12px; font-weight:400; color:var(--dim); }
 .gf-actions { display:flex; gap:6px; }
-.btn-edit, .btn-del { width:32px; height:32px; border-radius:7px; border:1px solid var(--bdr); background:var(--g3); cursor:pointer; font-size:17px; display:flex; align-items:center; justify-content:center; transition:all .15s; }
+.btn-edit, .btn-del { width:32px; height:32px; border-radius:7px; border:1px solid var(--bdr); background:var(--g3); cursor:pointer; font-size:12px; display:flex; align-items:center; justify-content:center; transition:all .15s; }
 .btn-edit:hover { border-color:var(--or); }
 .btn-del:hover { border-color:var(--rouge); background:rgba(239,43,45,.08); }
 
@@ -211,33 +223,33 @@ body { font-family:"Inter",sans-serif; background:var(--noir); color:var(--txt);
 .modal-bg { display:none; position:fixed; inset:0; background:rgba(0,0,0,.8); z-index:200; align-items:center; justify-content:center; padding:12px; }
 .modal-bg.on { display:flex; }
 .modal-box { background:var(--g1); border:1px solid var(--bdr); border-radius:14px; padding:20px; width:100%; max-width:400px; max-height:90vh; overflow-y:auto; }
-.modal-title { font-size:21px; font-weight:700; margin-bottom:16px; }
+.modal-title { font-size:12px; font-weight:700; margin-bottom:16px; }
 .form-row { margin-bottom:10px; }
-.form-label { font-size:17px; text-transform:uppercase; letter-spacing:1px; color:var(--dim); margin-bottom:5px; display:block; }
-.form-input { width:100%; padding:9px 12px; background:var(--g3); border:1px solid var(--bdr); border-radius:7px; color:var(--txt); font-size:19px; font-family:"Inter",sans-serif; transition:border-color .15s; }
+.form-label { font-size:12px; text-transform:uppercase; letter-spacing:1px; color:var(--dim); margin-bottom:5px; display:block; }
+.form-input { width:100%; padding:9px 12px; background:var(--g3); border:1px solid var(--bdr); border-radius:7px; color:var(--txt); font-size:12px; font-family:"Inter",sans-serif; transition:border-color .15s; }
 .form-input:focus { outline:none; border-color:var(--or); }
 .form-row-2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
 .badge-select { display:flex; gap:6px; flex-wrap:wrap; margin-top:4px; }
-.badge-opt { padding:4px 10px; border-radius:5px; border:1px solid var(--bdr); background:var(--g3); color:var(--dim); font-size:17px; font-weight:600; cursor:pointer; font-family:"Inter",sans-serif; transition:all .15s; }
+.badge-opt { padding:4px 10px; border-radius:5px; border:1px solid var(--bdr); background:var(--g3); color:var(--dim); font-size:12px; font-weight:600; cursor:pointer; font-family:"Inter",sans-serif; transition:all .15s; }
 .badge-opt.sel-b { border-color:var(--or); color:var(--or); background:rgba(252,209,22,.1); }
 .icone-select { display:flex; gap:6px; flex-wrap:wrap; margin-top:4px; }
-.ico-opt { width:34px; height:34px; border-radius:7px; border:1px solid var(--bdr); background:var(--g3); font-size:21px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .15s; }
+.ico-opt { width:34px; height:34px; border-radius:7px; border:1px solid var(--bdr); background:var(--g3); font-size:12px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .15s; }
 .ico-opt.sel-i { border-color:var(--or); background:rgba(252,209,22,.1); }
 .modal-btns { display:flex; gap:8px; margin-top:16px; }
-.btn-save { flex:1; padding:11px; background:var(--vert); border:none; border-radius:8px; color:#fff; font-size:19px; font-weight:700; cursor:pointer; font-family:"Inter",sans-serif; transition:opacity .15s; }
+.btn-save { flex:1; padding:11px; background:var(--vert); border:none; border-radius:8px; color:#fff; font-size:12px; font-weight:700; cursor:pointer; font-family:"Inter",sans-serif; transition:opacity .15s; }
 .btn-save:hover { opacity:.85; }
-.btn-cancel-modal { flex:1; padding:11px; background:var(--g3); border:1px solid var(--bdr); border-radius:8px; color:var(--txt); font-size:19px; cursor:pointer; font-family:"Inter",sans-serif; transition:background .15s; }
+.btn-cancel-modal { flex:1; padding:11px; background:var(--g3); border:1px solid var(--bdr); border-radius:8px; color:var(--txt); font-size:12px; cursor:pointer; font-family:"Inter",sans-serif; transition:background .15s; }
 .btn-cancel-modal:hover { background:var(--g4); }
 
 /* TOAST */
-.toast { position:fixed; bottom:16px; right:16px; background:var(--g2); border:1px solid var(--vert); border-radius:9px; padding:10px 16px; font-size:19px; z-index:999; transform:translateY(80px); opacity:0; transition:all 0.3s; pointer-events:none; }
+.toast { position:fixed; bottom:16px; right:16px; background:var(--g2); border:1px solid var(--vert); border-radius:9px; padding:10px 16px; font-size:12px; z-index:999; transform:translateY(80px); opacity:0; transition:all 0.3s; pointer-events:none; }
 .toast.on { transform:translateY(0); opacity:1; }
 .toast.err { border-color:var(--rouge); }
 
 /* EMPTY */
 .empty { text-align:center; padding:40px 20px; color:var(--dim); }
 .empty-ico { font-size:36px; margin-bottom:8px; }
-.empty-t { font-size:17px; font-weight:600; color:var(--txt); margin-bottom:4px; }
+.empty-t { font-size:12px; font-weight:600; color:var(--txt); margin-bottom:4px; }
 
 ::-webkit-scrollbar { width:4px; }
 ::-webkit-scrollbar-thumb { background:var(--bdr); border-radius:2px; }
@@ -245,6 +257,7 @@ body { font-family:"Inter",sans-serif; background:var(--noir); color:var(--txt);
 /* MOBILE */
 @media (max-width:640px) {
   .nav-tabs { display:none; }
+  .nav-desktop-info { display:none; }
   .hamburger { display:flex; }
   .nav-logo-sub { display:none; }
   .vente-wrap { grid-template-columns:1fr; grid-template-rows:auto auto; min-height:unset; }
@@ -256,7 +269,10 @@ body { font-family:"Inter",sans-serif; background:var(--noir); color:var(--txt);
   .stbl th, .stbl td { padding:8px 6px; }
   .gf-row { grid-template-columns:28px 1fr auto; }
 }
-@media (min-width:641px) { .nav-dropdown { display:none !important; } }
+@media (min-width:641px) {
+  .nav-dropdown { display:none !important; }
+  .hamburger { display:none !important; }
+}
 @media print {
   .nav,.action-col,.drop-area,.format-hint,.stock-stats,.histo-filters { display:none!important; }
   .vente-wrap { grid-template-columns:1fr!important; }
@@ -266,7 +282,7 @@ body { font-family:"Inter",sans-serif; background:var(--noir); color:var(--txt);
 .fc-total-bar {
   background:var(--g2); border:1px solid var(--bdr);
   border-radius:9px; padding:10px 14px; margin-bottom:10px;
-  font-size:14px; font-weight:600; color:var(--or);
+  font-size:12px; font-weight:600; color:var(--or);
   font-family:"JetBrains Mono",monospace; text-align:center;
 }
 .fc-total-bar.zero { color:var(--rouge); }
@@ -274,7 +290,7 @@ body { font-family:"Inter",sans-serif; background:var(--noir); color:var(--txt);
 /* STOCK PAR FORFAIT */
 .fc-count {
   display:block; margin-top:6px;
-  font-size:13px; font-weight:700;
+  font-size:12px; font-weight:700;
   padding:2px 8px; border-radius:20px;
   background:var(--g4); color:var(--dim);
   width:fit-content;
@@ -288,8 +304,8 @@ body { font-family:"Inter",sans-serif; background:var(--noir); color:var(--txt);
   background:var(--g2); border:1px solid var(--bdr);
   border-radius:10px; padding:12px 16px; margin-bottom:14px;
 }
-.total-bar-label { font-size:15px; color:var(--dim); }
-.total-bar-val { font-size:24px; font-weight:700; font-family:"JetBrains Mono",monospace; color:var(--or); }
+.total-bar-label { font-size:12px; color:var(--dim); }
+.total-bar-val { font-size:12px; font-weight:700; font-family:"JetBrains Mono",monospace; color:var(--or); }
 
 .spf-section { margin-bottom:10px; }
 .spf-header {
@@ -300,9 +316,9 @@ body { font-family:"Inter",sans-serif; background:var(--noir); color:var(--txt);
 .spf-header:hover { border-color:var(--g4); }
 .spf-header.expanded { border-radius:10px 10px 0 0; border-bottom-color:transparent; }
 .spf-left { display:flex; align-items:center; gap:10px; }
-.spf-name { font-size:15px; font-weight:700; }
+.spf-name { font-size:12px; font-weight:700; }
 .spf-badge {
-  font-size:13px; font-weight:700; padding:3px 10px;
+  font-size:12px; font-weight:700; padding:3px 10px;
   border-radius:20px;
 }
 .spf-badge.ok { background:rgba(0,154,68,.25); color:var(--vert); }
@@ -319,36 +335,205 @@ body { font-family:"Inter",sans-serif; background:var(--noir); color:var(--txt);
 .spf-toolbar { padding:10px 12px; border-bottom:1px solid var(--bdr); display:flex; gap:8px; }
 .btn-efface-forfait {
   padding:6px 12px; border:1px solid var(--bdr); border-radius:7px;
-  background:transparent; color:var(--rouge); font-size:13px;
+  background:transparent; color:var(--rouge); font-size:12px;
   cursor:pointer; font-family:"Inter",sans-serif; transition:all .15s;
 }
 .btn-efface-forfait:hover { background:rgba(239,43,45,.1); }
-</style>
+
+/* ÉCRAN DE CONNEXION */
+.login-screen {
+  display:none; position:fixed; inset:0;
+  background:var(--noir); z-index:500;
+  flex-direction:column; align-items:center; justify-content:center;
+  padding:24px;
+}
+.login-screen.show { display:flex; }
+.login-card {
+  background:var(--g1); border:1px solid var(--bdr);
+  border-radius:16px; padding:28px 24px;
+  width:100%; max-width:340px; text-align:center;
+}
+.login-logo {
+  width:64px; height:64px; border-radius:14px;
+  background:linear-gradient(135deg,var(--rouge),#a01);
+  display:flex; align-items:center; justify-content:center;
+  font-size:30px; margin:0 auto 16px;
+}
+.login-titre { font-size:12px; font-weight:700; margin-bottom:4px; }
+.login-sous { font-size:12px; color:var(--dim); margin-bottom:24px; }
+.login-role-btns { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:16px; }
+.login-role-btn {
+  padding:10px; border:1px solid var(--bdr); border-radius:8px;
+  background:var(--g3); color:var(--dim); font-size:12px; font-weight:600;
+  cursor:pointer; font-family:"Inter",sans-serif; transition:all .15s;
+}
+.login-role-btn.sel { border-color:var(--or); color:var(--or); background:rgba(252,209,22,.08); }
+.login-input {
+  width:100%; padding:12px 14px; background:var(--g3);
+  border:1px solid var(--bdr); border-radius:9px;
+  color:var(--txt); font-size:12px; font-family:"Inter",sans-serif;
+  margin-bottom:10px; text-align:center; letter-spacing:3px;
+  transition:border-color .15s;
+}
+.login-input:focus { outline:none; border-color:var(--or); }
+.login-input::placeholder { letter-spacing:0; color:var(--dim); }
+.login-btn {
+  width:100%; padding:13px; background:linear-gradient(135deg,var(--rouge),#b01);
+  border:none; border-radius:9px; color:#fff; font-size:12px; font-weight:700;
+  cursor:pointer; font-family:"Inter",sans-serif; transition:opacity .2s;
+  margin-bottom:8px;
+}
+.login-btn:hover { opacity:.85; }
+.login-err { font-size:12px; color:var(--rouge); min-height:20px; margin-top:4px; }
+.login-hint { font-size:12px; color:var(--dim); margin-top:12px; }
+
+/* BADGE ROLE dans nav */
+.nav-role-badge {
+  font-size:11px; padding:3px 8px; border-radius:5px; font-weight:700;
+  background:var(--g3); border:1px solid var(--bdr); color:var(--dim);
+}
+.nav-role-badge.patron { background:rgba(252,209,22,.15); color:var(--or); border-color:var(--or); }
+.nav-role-badge.vendeur { background:rgba(0,154,68,.15); color:var(--vert); border-color:var(--vert); }
+
+/* ===== TICKET PHYSIQUE ===== */
+.ticket-print-zone { background:#fff; color:#111; font-family:"JetBrains Mono",monospace; font-size:12px; max-width:280px; margin:0 auto; padding:14px; border-radius:8px; }
+.tpz-header { text-align:center; border-bottom:1px dashed #ccc; padding-bottom:8px; margin-bottom:8px; }
+.tpz-logo { font-size:12px; font-weight:700; color:#EF2B2D; }
+.tpz-code { font-size:12px; font-weight:700; letter-spacing:4px; text-align:center; margin:10px 0; }
+.tpz-row { display:flex; justify-content:space-between; margin-bottom:3px; font-size:11px; }
+.tpz-footer { text-align:center; border-top:1px dashed #ccc; margin-top:8px; padding-top:6px; font-size:10px; color:#999; }
+@media print { body *{visibility:hidden!important} .ticket-print-zone,.ticket-print-zone *{visibility:visible!important} .ticket-print-zone{position:fixed;top:0;left:0;width:100%;background:#fff;z-index:9999;padding:20px;} }
+
+/* ===== MINUTERIE ===== */
+.minuterie-zone { background:var(--g2); border:1px solid var(--bdr); border-radius:10px; padding:12px; display:none; }
+.minuterie-titre { font-size:11px; text-transform:uppercase; letter-spacing:1px; color:var(--dim); margin-bottom:6px; }
+.minuterie-display { font-size:12px; font-weight:700; font-family:"JetBrains Mono",monospace; color:var(--or); text-align:center; letter-spacing:4px; }
+.minuterie-display.alerte { color:var(--rouge); animation:clignote .8s infinite; }
+@keyframes clignote { 0%,100%{opacity:1} 50%{opacity:.3} }
+.minuterie-forfait { font-size:12px; color:var(--dim); text-align:center; margin-top:4px; }
+
+/* ===== ALERTE STOCK ===== */
+.alerte-stock { background:rgba(239,43,45,.1); border:1px solid var(--rouge); border-radius:9px; padding:10px 14px; margin-bottom:10px; font-size:12px; color:var(--rouge); display:none; }
+
+/* ===== GRAPHIQUES ===== */
+.graph-wrap { padding:16px; max-width:860px; margin:0 auto; }
+.graph-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:14px; margin-top:14px; }
+.graph-card { background:var(--g2); border:1px solid var(--bdr); border-radius:12px; padding:16px; }
+.graph-title { font-size:12px; font-weight:700; color:var(--dim); text-transform:uppercase; letter-spacing:1px; margin-bottom:12px; }
+.bar-row { display:flex; align-items:center; gap:8px; margin-bottom:7px; }
+.bar-lbl { font-size:12px; color:var(--dim); width:72px; flex-shrink:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.bar-track { flex:1; background:var(--g3); border-radius:4px; height:16px; overflow:hidden; }
+.bar-fill { height:100%; border-radius:4px; background:linear-gradient(90deg,var(--rouge),var(--or)); transition:width .5s; }
+.bar-val { font-size:12px; font-weight:700; color:var(--or); width:55px; text-align:right; flex-shrink:0; font-family:"JetBrains Mono",monospace; }
+
+/* ===== CREDIT ===== */
+.credit-wrap { padding:16px; max-width:860px; margin:0 auto; }
+.credit-card { background:var(--g2); border:1px solid var(--bdr); border-radius:10px; padding:14px; margin-bottom:8px; }
+.credit-top { display:flex; justify-content:space-between; align-items:center; }
+.credit-nom { font-size:12px; font-weight:700; }
+.credit-montant { font-size:12px; font-weight:700; color:var(--rouge); font-family:"JetBrains Mono",monospace; }
+.badge-dette { padding:3px 8px; border-radius:4px; font-size:10px; font-weight:600; background:rgba(239,43,45,.2); color:var(--rouge); }
+.badge-solde { background:rgba(0,154,68,.2); color:var(--vert); padding:3px 8px; border-radius:4px; font-size:10px; font-weight:600; }
+
+/* ===== HORS-LIGNE ===== */
+.offline-bar { background:rgba(252,209,22,.1); border-bottom:1px solid var(--or); padding:7px 16px; font-size:12px; color:var(--or); text-align:center; display:none; }
+
+/* ===== WHATSAPP ===== */
+.btn-wa { display:flex; align-items:center; justify-content:center; gap:8px; padding:11px 16px; background:#25D366; border:none; border-radius:9px; color:#fff; font-size:12px; font-weight:700; cursor:pointer; font-family:"Inter",sans-serif; transition:opacity .2s; width:100%; }
+.btn-wa:hover { opacity:.85; }
+
+/* ===== CHAT ===== */
+.msg-bubble {
+  max-width:80%; padding:9px 13px; border-radius:12px;
+  font-size:13px; line-height:1.4; word-break:break-word;
+}
+.msg-moi { align-self:flex-end; background:var(--rouge); color:#fff; border-radius:12px 12px 2px 12px; }
+.msg-autre { align-self:flex-start; background:var(--g3); color:var(--txt); border-radius:12px 12px 12px 2px; }
+.msg-patron-badge { background:rgba(252,209,22,.2); color:var(--or); }
+.msg-nom { font-size:10px; font-weight:700; margin-bottom:3px; opacity:.8; }
+.msg-heure { font-size:10px; opacity:.6; margin-top:3px; text-align:right; }
+.msg-systeme { align-self:center; font-size:11px; color:var(--dim); font-style:italic; background:transparent; padding:2px 0; }
+
+/* ===== EQUIPE VENDEURS ===== */
+.vendeur-card {
+  background:var(--g2); border:1px solid var(--bdr);
+  border-radius:10px; padding:14px 16px; margin-bottom:8px;
+  display:flex; align-items:center; gap:12px;
+}
+.vendeur-avatar {
+  width:42px; height:42px; border-radius:50%; flex-shrink:0;
+  background:linear-gradient(135deg,var(--rouge),var(--or));
+  display:flex; align-items:center; justify-content:center;
+  font-size:18px; font-weight:700; color:#fff;
+}
+.vendeur-infos { flex:1; min-width:0; }
+.vendeur-nom { font-size:14px; font-weight:700; }
+.vendeur-code { font-family:"JetBrains Mono",monospace; font-size:13px; color:var(--or); letter-spacing:2px; }
+.vendeur-stats { font-size:12px; color:var(--dim); margin-top:3px; }
+.vendeur-statut { font-size:11px; font-weight:700; padding:3px 8px; border-radius:20px; }
+.vs-actif { background:rgba(0,154,68,.2); color:var(--vert); }
+.vs-inactif { background:rgba(136,136,136,.2); color:var(--dim); }</style>
 <body>
+
+<!-- BANNIÈRE HORS-LIGNE -->
+<div class="offline-bar" id="offlineBar">Hors-ligne — données locales uniquement</div>
+
+<!-- ÉCRAN DE CONNEXION -->
+<div class="login-screen show" id="loginScreen">
+  <div class="login-card">
+    <div class="login-logo">📡</div>
+    <div class="login-titre">Vente PRO</div>
+    <div class="login-sous">Kaya · BURKINA FASO</div>
+
+    <div class="login-role-btns">
+      <button class="login-role-btn sel" id="roleVendeurBtn" onclick="selRole('vendeur')">Vendeur</button>
+      <button class="login-role-btn" id="rolePatronBtn" onclick="selRole('patron')">Patron</button>
+    </div>
+
+    <input class="login-input" id="loginCode" type="password"
+      placeholder="Code d'accès" maxlength="20"
+      onkeydown="if(event.key==='Enter') seConnecter()">
+    <button class="login-btn" onclick="seConnecter()">Entrer</button>
+    <div class="login-err" id="loginErr"></div>
+    <div class="login-hint" id="loginHint">Entrez votre code vendeur</div>
+    <a href="https://wa.me/22670608148" target="_blank" style="display:block;margin-top:16px;font-size:12px;color:var(--dim);text-decoration:none;text-align:center;">
+      Besoin d'aide ? +226 70 60 81 48
+    </a>
+  </div>
+</div>
 
 <nav class="nav">
   <div class="nav-logo">
     <div class="nav-logo-icon">📡</div>
     <div>
-      <div class="nav-logo-text">Startech WiFi Zone</div>
-      <div class="nav-logo-sub">Barsalogho</div>
+      <div class="nav-logo-text">Vente PRO</div>
+      <div class="nav-logo-sub">Kaya</div>
     </div>
   </div>
+
+  <!-- Desktop : onglets + infos -->
   <div class="nav-tabs">
     <button class="tab on" onclick="goPage('vente',this)">Vente</button>
-    <button class="tab" onclick="goPage('stock',this)">Stock CSV</button>
+    <button class="tab" onclick="goPage('stock',this)">Stock</button>
     <button class="tab" onclick="goPage('forfaits',this)">Forfaits</button>
     <button class="tab" onclick="goPage('histo',this)">Historique</button>
-    <button class="tab" onclick="goPage('params',this)">Parametres</button>
+    <button class="tab" onclick="goPage('graphs',this)">Graphiques</button>
+    <button class="tab" onclick="goPage('credit',this)">Credits</button>
+    <button class="tab" onclick="goPage('params',this)">Params</button>
+    <button class="tab" onclick="goPage('equipe',this)">Equipe</button>
     <button class="tab" onclick="goPage('patron',this)">Patron</button>
   </div>
-  <div class="nav-stock" id="navStock">
-    <div class="stock-dot" id="stockDot"></div>
-    <span id="stockLabel">0 tickets</span>
+  <div class="nav-desktop-info">
+    <div class="nav-stock" id="navStock">
+      <div class="stock-dot" id="stockDot"></div>
+      <span id="stockLabel">0 tickets</span>
+    </div>
+    <span class="nav-role-badge" id="navRoleBadge">—</span>
+    <span id="fbStatus" style="font-size:11px;color:var(--dim);white-space:nowrap;">FB...</span>
+    <button onclick="seDeconnecter()" style="background:none;border:1px solid var(--bdr);border-radius:6px;color:var(--dim);font-size:11px;padding:4px 8px;cursor:pointer;font-family:Inter,sans-serif;white-space:nowrap;">Quitter</button>
   </div>
-  <div class="nav-stock" style="border-color:transparent;">
-    <span id="fbStatus" style="font-size:11px;color:var(--dim);">Firebase...</span>
-  </div>
+
+  <!-- Mobile : hamburger seulement -->
   <button class="hamburger" id="hamburger" onclick="toggleMenu()">
     <span></span><span></span><span></span>
   </button>
@@ -356,11 +541,27 @@ body { font-family:"Inter",sans-serif; background:var(--noir); color:var(--txt);
 
 <!-- DROPDOWN MOBILE -->
 <div class="nav-dropdown" id="navDropdown">
+  <!-- Info bar : stock + rôle + firebase + quitter -->
+  <div class="nav-info-bar">
+    <div class="nav-info-left">
+      <div class="stock-dot ok" id="stockDotM"></div>
+      <span id="stockLabelM" style="color:var(--vert);font-weight:700;">0 tickets</span>
+      <span class="nav-role-badge" id="navRoleBadgeM">—</span>
+    </div>
+    <div class="nav-info-right">
+      <span id="fbStatusM" style="font-size:12px;color:var(--dim);">FB...</span>
+      <button onclick="seDeconnecter();fermerMenu()" style="background:none;border:1px solid var(--bdr);border-radius:6px;color:var(--rouge);font-size:12px;padding:4px 10px;cursor:pointer;font-family:Inter,sans-serif;">Quitter</button>
+    </div>
+  </div>
+  <!-- Onglets -->
   <button class="tab on" onclick="goPage('vente',this);fermerMenu()">Vente</button>
   <button class="tab" onclick="goPage('stock',this);fermerMenu()">Stock CSV</button>
   <button class="tab" onclick="goPage('forfaits',this);fermerMenu()">Forfaits</button>
   <button class="tab" onclick="goPage('histo',this);fermerMenu()">Historique</button>
+  <button class="tab" onclick="goPage('graphs',this);fermerMenu()">Graphiques</button>
+  <button class="tab" onclick="goPage('credit',this);fermerMenu()">Credits</button>
   <button class="tab" onclick="goPage('params',this);fermerMenu()">Parametres</button>
+  <button class="tab" onclick="goPage('equipe',this);fermerMenu()">Equipe</button>
   <button class="tab" onclick="goPage('patron',this);fermerMenu()">Patron</button>
 </div>
 
@@ -421,6 +622,25 @@ body { font-family:"Inter",sans-serif; background:var(--noir); color:var(--txt);
         </button>
         <div class="nfc-hint" id="nfcHint">Approcher les deux téléphones dos à dos</div>
       </div>
+
+      <!-- MINUTERIE -->
+      <div class="minuterie-zone" id="minuterieZone">
+        <div class="minuterie-titre">Temps restant client</div>
+        <div class="minuterie-display" id="minuterieDisplay">00:00:00</div>
+        <div class="minuterie-forfait" id="minuterieForfait"></div>
+        <button onclick="arreterMinuterie()" style="width:100%;margin-top:8px;padding:7px;background:transparent;border:1px solid var(--bdr);border-radius:7px;color:var(--dim);cursor:pointer;font-size:12px;font-family:Inter,sans-serif;">Arreter</button>
+      </div>
+
+      <!-- TICKET PHYSIQUE -->
+      <div id="ticketPhysiqueZone" style="display:none;">
+        <div class="ticket-print-zone" id="ticketPrintContent"></div>
+        <button onclick="imprimerTicket()" class="btn-wa" style="background:var(--g3);color:var(--txt);margin-top:8px;">
+          Imprimer le ticket
+        </button>
+      </div>
+
+      <!-- ALERTE STOCK -->
+      <div class="alerte-stock" id="alerteStock"></div>
 
     </div>
   </div>
@@ -546,8 +766,39 @@ body { font-family:"Inter",sans-serif; background:var(--noir); color:var(--txt);
       <button class="flt" onclick="filtreHisto('1S',this)">1 Semaine</button>
       <button class="flt" onclick="filtreHisto('1M',this)">1 Mois</button>
       <button class="flt" style="margin-left:auto;border-color:var(--or);color:var(--or);" onclick="exportCSV()">⬇ CSV</button>
+      <button class="btn-wa" style="width:auto;padding:6px 12px;font-size:12px;" onclick="envoyerRapportWA()">WhatsApp</button>
     </div>
     <div id="histoContent"></div>
+  </div>
+</div>
+
+<!-- PAGE GRAPHIQUES -->
+<div id="pg-graphs" class="pg">
+  <div class="graph-wrap">
+    <div class="col-label">Graphiques des ventes</div>
+    <div class="recettes-bar" id="graphRecettes"></div>
+    <div class="graph-grid" id="graphGrid"></div>
+  </div>
+</div>
+
+<!-- PAGE CREDIT -->
+<div id="pg-credit" class="pg">
+  <div class="credit-wrap">
+    <div class="col-label">Gestion des credits clients</div>
+    <div class="param-section" style="margin-bottom:14px;">
+      <div class="param-section-title">Nouveau credit</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
+        <input class="param-input" id="creditNom" placeholder="Nom du client">
+        <input class="param-input" id="creditTel" placeholder="Telephone" type="tel">
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
+        <select class="param-input" id="creditForfait"></select>
+        <input class="param-input" id="creditMontant" placeholder="Montant du" type="number">
+      </div>
+      <input class="param-input" id="creditNote" placeholder="Note (optionnel)" style="margin-bottom:8px;">
+      <button class="btn-param-save" onclick="ajouterCredit()" style="width:100%;">Enregistrer le credit</button>
+    </div>
+    <div id="creditList"></div>
   </div>
 </div>
 
@@ -570,11 +821,11 @@ body { font-family:"Inter",sans-serif; background:var(--noir); color:var(--txt);
       </div>
       <div class="param-row">
         <label class="param-label">Nom du réseau WiFi (affiché sur ticket)</label>
-        <input class="param-input" id="paramSSID" placeholder="Startech WiFi Zone">
+        <input class="param-input" id="paramSSID" placeholder="Vente PRO">
       </div>
       <div class="param-row">
         <label class="param-label">Nom de la boutique / point de vente</label>
-        <input class="param-input" id="paramBoutique" placeholder="Startech BUSINESS Barsalogho">
+        <input class="param-input" id="paramBoutique" placeholder="Startech BUSINESS Kaya">
       </div>
     </div>
 
@@ -603,6 +854,47 @@ body { font-family:"Inter",sans-serif; background:var(--noir); color:var(--txt);
     </div>
 
     <button class="btn-param-save" onclick="sauvegarderParams()">✓ Enregistrer les paramètres</button>
+
+    <!-- CHANGER MON CODE — vendeur seulement -->
+    <div class="param-section" id="sectionChangerCode" style="margin-top:14px;display:none;">
+      <div class="param-section-title">Changer mon code d'accès</div>
+      <div class="param-row">
+        <label class="param-label">Code actuel</label>
+        <input class="param-input" id="ancienCode" type="password" placeholder="Entrer votre code actuel" style="letter-spacing:2px;">
+      </div>
+      <div class="param-row">
+        <label class="param-label">Nouveau code</label>
+        <input class="param-input" id="nouveauCode" placeholder="Nouveau code (min 4 car.)" maxlength="10" style="letter-spacing:2px;text-transform:uppercase;"
+          oninput="this.value=this.value.toUpperCase()">
+        <div style="font-size:11px;color:var(--dim);margin-top:4px;">Lettres et chiffres uniquement · min 4 caractères</div>
+      </div>
+      <div class="param-row">
+        <label class="param-label">Confirmer le nouveau code</label>
+        <input class="param-input" id="confirmCode" placeholder="Répéter le nouveau code" maxlength="10" style="letter-spacing:2px;text-transform:uppercase;"
+          oninput="this.value=this.value.toUpperCase()">
+      </div>
+      <div id="changCodeErr" style="font-size:12px;color:var(--rouge);margin-bottom:8px;min-height:16px;"></div>
+      <button class="btn-param-save" onclick="changerMonCode()" style="width:100%;">Confirmer le changement</button>
+    </div>
+
+    <!-- CONTACT & À PROPOS -->
+    <div class="param-section" style="margin-top:14px;text-align:center;">
+      <div class="param-section-title">A propos · StarTech</div>
+      <div style="font-size:22px;font-weight:700;color:var(--rouge);margin-bottom:4px;">Vente PRO</div>
+      <div style="font-size:13px;color:var(--dim);margin-bottom:16px;">Application de gestion de vente de tickets WiFi<br>Kaya · Burkina Faso</div>
+      <a href="tel:+22670608148" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:12px;background:var(--g3);border:1px solid var(--bdr);border-radius:9px;color:var(--txt);text-decoration:none;margin-bottom:8px;font-size:15px;font-weight:600;">
+        Appeler · +226 70 60 81 48
+      </a>
+      <a href="tel:+22676875052" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:12px;background:var(--g3);border:1px solid var(--bdr);border-radius:9px;color:var(--txt);text-decoration:none;margin-bottom:8px;font-size:15px;font-weight:600;">
+        Appeler · +226 76 87 50 52
+      </a>
+      <a href="https://wa.me/22670608148" target="_blank" class="btn-wa" style="text-decoration:none;margin-bottom:8px;">
+        WhatsApp · +226 70 60 81 48
+      </a>
+      <div style="font-size:11px;color:var(--dim);margin-top:12px;">
+        Vente PRO v2.0 · Startech BUSINESS · Kaya
+      </div>
+    </div>
   </div>
 </div>
 
@@ -628,10 +920,105 @@ body { font-family:"Inter",sans-serif; background:var(--noir); color:var(--txt);
         <div>Les ventes de tous les vendeurs apparaissent ici</div>
       </div>
     </div>
+
+    <!-- GESTION VENDEURS -->
+    <div style="margin-top:20px;">
+      <div class="col-label">Codes d'accès vendeurs</div>
+      <div class="param-section">
+        <div class="param-section-title">Générer un nouveau code vendeur</div>
+        <div style="display:flex;gap:8px;margin-bottom:10px;">
+          <input class="param-input" id="nouveauVendeurNom" placeholder="Nom du vendeur (ex: Kiosk-A)" style="flex:1;">
+          <input class="param-input" id="nouveauVendeurTel" placeholder="+226..." type="tel" style="flex:1;">
+          <button class="btn-param-save" onclick="creerVendeur()" style="white-space:nowrap;">+ Créer</button>
+        </div>
+        <div id="listeVendeurs"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE EQUIPE -->
+<div id="pg-equipe" class="pg">
+  <div class="histo-wrap">
+    <div class="col-label">Equipe & Chat</div>
+
+    <!-- TABS EQUIPE -->
+    <div style="display:flex;gap:6px;margin-bottom:14px;">
+      <button class="flt on" id="eqTabVendeurs" onclick="switchEqTab('vendeurs')">Vendeurs</button>
+      <button class="flt" id="eqTabChat" onclick="switchEqTab('chat')">
+        Chat
+        <span id="chatBadge" style="display:none;background:var(--rouge);color:#fff;border-radius:10px;padding:1px 6px;font-size:10px;margin-left:4px;">0</span>
+      </button>
+    </div>
+
+    <!-- SECTION VENDEURS -->
+    <div id="eqVendeurs">
+      <div id="equipeList"></div>
+    </div>
+
+    <!-- SECTION CHAT -->
+    <div id="eqChat" style="display:none;">
+      <div id="chatMessages" style="
+        background:var(--g2); border:1px solid var(--bdr); border-radius:12px;
+        padding:12px; height:360px; overflow-y:auto; margin-bottom:10px;
+        display:flex; flex-direction:column; gap:8px;
+      "></div>
+      <div style="display:flex;gap:8px;">
+        <input class="param-input" id="chatInput" placeholder="Ecrire un message..."
+          style="flex:1;margin-bottom:0;"
+          onkeydown="if(event.key==='Enter') envoyerMessage()">
+        <button class="btn-param-save" onclick="envoyerMessage()" style="padding:9px 16px;white-space:nowrap;">Envoyer</button>
+      </div>
+    </div>
+
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
+
+<!-- MODAL NOUVEAU CODE VENDEUR -->
+<div class="modal-bg" id="modalNouveauCode">
+  <div class="modal-box" style="max-width:340px;text-align:center;">
+    <div style="font-size:32px;margin-bottom:10px;">🔑</div>
+    <div class="modal-title">Code d'accès</div>
+    <div style="font-size:13px;color:var(--dim);margin-bottom:16px;">
+      Code généré pour <strong id="modalCodeNom"></strong>
+    </div>
+    <div style="background:var(--noir);border:2px solid var(--or);border-radius:12px;padding:16px;margin-bottom:16px;">
+      <div style="font-size:11px;color:var(--dim);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;">Code d'accès</div>
+      <div id="modalCodeVal" style="font-family:'JetBrains Mono',monospace;font-size:30px;font-weight:700;letter-spacing:6px;color:var(--or);"></div>
+    </div>
+    <button id="modalCodeWA" class="btn-wa" style="margin-bottom:8px;display:none;">
+      Envoyer par WhatsApp
+    </button>
+    <button id="modalCodeCopier" class="btn-param-save" style="width:100%;margin-bottom:8px;background:var(--g3);color:var(--txt);">
+      Copier le message
+    </button>
+    <button class="btn-cancel-modal" onclick="document.getElementById('modalNouveauCode').classList.remove('on')" style="width:100%;">
+      Fermer
+    </button>
+  </div>
+</div>
+
+<!-- MODAL ÉDITION VENDEUR -->
+<div class="modal-bg" id="modalEditVendeur">
+  <div class="modal-box" style="max-width:340px;">
+    <div class="modal-title">Modifier le vendeur</div>
+    <div class="form-row">
+      <label class="form-label">Nom du vendeur</label>
+      <input class="form-input" id="editVendeurNom" placeholder="Nom">
+    </div>
+    <div class="form-row">
+      <label class="form-label">Code d'accès</label>
+      <input class="form-input" id="editVendeurCode" placeholder="CODE" style="letter-spacing:3px;text-transform:uppercase;" maxlength="10">
+      <div style="font-size:11px;color:var(--dim);margin-top:4px;">Min 4 caractères · lettres et chiffres</div>
+    </div>
+    <div class="modal-btns">
+      <button class="btn-cancel-modal" onclick="fermerEditVendeur()">Annuler</button>
+      <button class="btn-save" onclick="sauvegarderEditVendeur()">Enregistrer</button>
+    </div>
+  </div>
+</div>
 
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
@@ -651,8 +1038,8 @@ var FORFAITS = FORFAITS_DEFAULT_DATA.slice();
 // PARAMETRES (toujours local — propre à chaque téléphone)
 var PARAMS = JSON.parse(localStorage.getItem("stw_params") || "null") || {
   ip: "192.168.88.1",
-  ssid: "Startech WiFi Zone",
-  boutique: "Startech BUSINESS Barsalogho",
+  ssid: "Vente PRO",
+  boutique: "Startech BUSINESS Kaya",
   nfcType: "portail"
 };
 
@@ -673,6 +1060,13 @@ function init() {
   renderForfaits();
   updateNavStock();
   renderHisto("tout");
+  // Vérifier session sauvegardée
+  var savedRole = localStorage.getItem("stw_role");
+  var savedNom  = localStorage.getItem("stw_vendeur");
+  if (savedRole && savedNom) {
+    nomVendeur = savedNom;
+    ouvrirSession(savedRole, savedNom);
+  }
 }
 
 // ====================================================
@@ -716,11 +1110,14 @@ function goPage(id, btn) {
       tabs[k].classList.add("on");
     }
   }
-  if (id === "histo") { renderRecettes(); renderHisto("tout"); }
+  if (id === "histo") { renderHisto("tout"); }
   if (id === "stock") renderStockTable();
   if (id === "forfaits") renderGF();
   if (id === "params") chargerParams();
-  if (id === "patron") chargerVentesPatron();
+  if (id === "patron") { chargerVentesPatron(); chargerVendeurs(); }
+  if (id === "graphs") renderGraphiques();
+  if (id === "credit") { initCreditForfaitSel(); renderCredits(); }
+  if (id === "equipe") chargerEquipe();
 }
 
 // ====================================================
@@ -728,12 +1125,17 @@ function goPage(id, btn) {
 // ====================================================
 function updateNavStock() {
   var total = 0;
-  for (var i = 0; i < stock.length; i++) {
-    if (!stock[i].utilise) total++;
-  }
-  document.getElementById("stockLabel").textContent = total + " ticket(s)";
-  var dot = document.getElementById("stockDot");
-  dot.className = "stock-dot" + (total > 0 ? " ok" : "");
+  for (var i = 0; i < stock.length; i++) { if (!stock[i].utilise) total++; }
+  var txt = total + " ticket(s)";
+  var dotCls = "stock-dot" + (total > 0 ? " ok" : "");
+  // Desktop
+  document.getElementById("stockLabel").textContent = txt;
+  document.getElementById("stockDot").className = dotCls;
+  // Mobile dropdown
+  var lM = document.getElementById("stockLabelM");
+  var dM = document.getElementById("stockDotM");
+  if (lM) { lM.textContent = txt; lM.style.color = total > 0 ? "var(--vert)" : "var(--dim)"; }
+  if (dM) dM.className = dotCls;
   renderForfaits();
 }
 
@@ -953,6 +1355,16 @@ function validerVente() {
   db.collection("ventes").doc(vente.id).set(vente);
 
   toast("Vente validée — " + fmt(forfait.prix) + " FCFA");
+
+  // Ticket physique
+  afficherTicketPhysique(code, forfait);
+
+  // Minuterie
+  demarrerMinuterie(forfait);
+
+  // Alerte stock
+  verifierAlerteStock();
+
   resetVente();
 }
 
@@ -1368,7 +1780,7 @@ function lancerNFC() {
 
   var urlPortail = "http://" + PARAMS.ip + "/login?username=" + selCode + "&password=" + selCode;
   var contenu = PARAMS.nfcType === "portail" ? urlPortail : selCode;
-  var texte = "🌐 " + (PARAMS.ssid || "Startech WiFi Zone") + "\n📶 Forfait : " + selForfait.label + "\n🔑 Code : " + selCode + "\n🔗 " + urlPortail;
+  var texte = "🌐 " + (PARAMS.ssid || "Vente PRO") + "\n📶 Forfait : " + selForfait.label + "\n🔑 Code : " + selCode + "\n🔗 " + urlPortail;
 
   var btn = document.getElementById("btnNFC");
   var hint = document.getElementById("nfcHint");
@@ -1479,13 +1891,24 @@ function chargerParams() {
   document.getElementById("paramSSID").value     = PARAMS.ssid;
   document.getElementById("paramBoutique").value = PARAMS.boutique;
   document.getElementById("paramNFCType").value  = PARAMS.nfcType;
+  // Afficher section changer code uniquement pour les vendeurs
+  var sec = document.getElementById("sectionChangerCode");
+  if (sec) sec.style.display = (roleActuel === "vendeur") ? "block" : "none";
+  // Vider les champs
+  var ac = document.getElementById("ancienCode");
+  var nc = document.getElementById("nouveauCode");
+  var cc = document.getElementById("confirmCode");
+  if (ac) ac.value = "";
+  if (nc) nc.value = "";
+  if (cc) cc.value = "";
+  if (document.getElementById("changCodeErr")) document.getElementById("changCodeErr").textContent = "";
 }
 
 function sauvegarderParams() {
   var v = document.getElementById("paramVendeur").value.trim();
   if (v) { nomVendeur = v; localStorage.setItem("stw_vendeur", v); }
   PARAMS.ip       = document.getElementById("paramIP").value.trim() || "192.168.88.1";
-  PARAMS.ssid     = document.getElementById("paramSSID").value.trim() || "Startech WiFi Zone";
+  PARAMS.ssid     = document.getElementById("paramSSID").value.trim() || "Vente PRO";
   PARAMS.boutique = document.getElementById("paramBoutique").value.trim() || "Startech BUSINESS";
   PARAMS.nfcType  = document.getElementById("paramNFCType").value;
   localStorage.setItem("stw_params", JSON.stringify(PARAMS));
@@ -1678,6 +2101,18 @@ function initFirebase() {
     db = firebase.firestore();
     document.getElementById("fbStatus").textContent = "Firebase OK";
     document.getElementById("fbStatus").style.color = "var(--vert)";
+    var fbM = document.getElementById("fbStatusM");
+    if (fbM) { fbM.textContent = "Firebase OK"; fbM.style.color = "var(--vert)"; }
+
+    // Démarrer chat listener
+    demarrerChatListener();
+
+    // Sauvegarder code patron par défaut si pas encore défini
+    db.collection("config").doc("auth").get().then(function(doc) {
+      if (!doc.exists) {
+        db.collection("config").doc("auth").set({ codePatron: CODE_PATRON });
+      }
+    });
 
     // Charger les forfaits partagés
     db.collection("config").doc("forfaits").onSnapshot(function(doc) {
@@ -1693,6 +2128,8 @@ function initFirebase() {
       stock = [];
       snap.forEach(function(doc) { stock.push(doc.data()); });
       updateNavStock();
+      verifierAlerteStock();
+      cacheLocal();
     });
 
     // Écouter les ventes en temps réel
@@ -1701,11 +2138,14 @@ function initFirebase() {
         ventes = [];
         snap.forEach(function(doc) { ventes.push(doc.data()); });
         renderRecettes();
+        cacheLocal();
       });
 
   } catch(e) {
     document.getElementById("fbStatus").textContent = "Firebase erreur";
     document.getElementById("fbStatus").style.color = "var(--rouge)";
+    var fbME = document.getElementById("fbStatusM");
+    if (fbME) { fbME.textContent = "Firebase erreur"; fbME.style.color = "var(--rouge)"; }
     // Fallback localStorage
     FORFAITS = JSON.parse(localStorage.getItem("stw_forfaits") || "null") || FORFAITS_DEFAULT_DATA;
     stock  = JSON.parse(localStorage.getItem("stw_stock")   || "[]");
@@ -1720,8 +2160,823 @@ function envoyerVente(vente) {
 }
 
 // ====================================================
+// AUTHENTIFICATION
+// ====================================================
+var roleActuel = "";  // "patron" ou "vendeur"
+var CODE_PATRON = "PATRON2025"; // Code patron fixe — à changer dans Firebase
+var loginRole = "vendeur";
+
+function selRole(role) {
+  loginRole = role;
+  document.getElementById("roleVendeurBtn").classList.toggle("sel", role === "vendeur");
+  document.getElementById("rolePatronBtn").classList.toggle("sel", role === "patron");
+  document.getElementById("loginHint").textContent = role === "patron" ?
+    "Entrez le code patron" : "Entrez votre code vendeur";
+  document.getElementById("loginCode").value = "";
+  document.getElementById("loginErr").textContent = "";
+}
+
+function seConnecter() {
+  var code = document.getElementById("loginCode").value.trim().toUpperCase();
+  if (!code) { document.getElementById("loginErr").textContent = "Entrez un code"; return; }
+
+  if (loginRole === "patron") {
+    // Vérifier code patron dans Firebase
+    if (!db) { verifierCodePatronLocal(code); return; }
+    db.collection("config").doc("auth").get().then(function(doc) {
+      var codePatron = doc.exists ? (doc.data().codePatron || CODE_PATRON) : CODE_PATRON;
+      if (code === codePatron.toUpperCase()) {
+        ouvrirSession("patron", "PATRON");
+      } else {
+        document.getElementById("loginErr").textContent = "Code patron incorrect";
+      }
+    }).catch(function() { verifierCodePatronLocal(code); });
+  } else {
+    // Vérifier code vendeur dans Firebase
+    if (!db) { document.getElementById("loginErr").textContent = "Firebase non connecté"; return; }
+    db.collection("vendeurs").where("code", "==", code).where("actif", "==", true).get()
+      .then(function(snap) {
+        if (!snap.empty) {
+          var data = snap.docs[0].data();
+          ouvrirSession("vendeur", data.nom);
+        } else {
+          document.getElementById("loginErr").textContent = "Code incorrect ou inactif";
+        }
+      });
+  }
+}
+
+function verifierCodePatronLocal(code) {
+  if (code === CODE_PATRON) {
+    ouvrirSession("patron", "PATRON");
+  } else {
+    document.getElementById("loginErr").textContent = "Code incorrect";
+  }
+}
+
+function ouvrirSession(role, nom) {
+  roleActuel = role;
+  nomVendeur = nom;
+  localStorage.setItem("stw_vendeur", nom);
+  localStorage.setItem("stw_role", role);
+
+  // Masquer l'écran de connexion
+  document.getElementById("loginScreen").classList.remove("show");
+
+  // Badge rôle dans nav (desktop + mobile)
+  var badge = document.getElementById("navRoleBadge");
+  var badgeM = document.getElementById("navRoleBadgeM");
+  var txt2 = role === "patron" ? "Patron" : nom;
+  var cls = "nav-role-badge " + role;
+  if (badge) { badge.textContent = txt2; badge.className = cls; }
+  if (badgeM) { badgeM.textContent = txt2; badgeM.className = cls; }
+
+  // Restreindre les onglets selon le rôle
+  appliquerRole(role);
+}
+
+function appliquerRole(role) {
+  var pagesPatronOnly = ["'stock'", "'patron'", "'graphs'", "'credit'", "'equipe'"];
+  var tabs = document.querySelectorAll(".tab, .nav-dropdown .tab");
+  for (var i = 0; i < tabs.length; i++) {
+    var t = tabs[i];
+    var oc = t.getAttribute("onclick") || "";
+    var isPatronOnly = false;
+    for (var j = 0; j < pagesPatronOnly.length; j++) {
+      if (oc.indexOf(pagesPatronOnly[j]) >= 0) { isPatronOnly = true; break; }
+    }
+    if (isPatronOnly) t.style.display = role === "patron" ? "" : "none";
+  }
+  if (role === "vendeur") goPage("vente", null);
+  verifierAlerteStock();
+}
+
+function seDeconnecter() {
+  localStorage.removeItem("stw_role");
+  localStorage.removeItem("stw_vendeur");
+  roleActuel = "";
+  nomVendeur = "Vendeur";
+  document.getElementById("loginCode").value = "";
+  document.getElementById("loginErr").textContent = "";
+  loginRole = "vendeur";
+  selRole("vendeur");
+  document.getElementById("loginScreen").classList.add("show");
+}
+
+// ====================================================
+// GESTION VENDEURS (patron uniquement)
+// ====================================================
+function creerVendeur() {
+  if (!db) return;
+  var nom = document.getElementById("nouveauVendeurNom").value.trim();
+  var tel = document.getElementById("nouveauVendeurTel").value.trim();
+  if (!nom) { toast("Entrez un nom de vendeur", true); return; }
+
+  var chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  var code = "";
+  for (var i = 0; i < 6; i++) code += chars[Math.floor(Math.random() * chars.length)];
+
+  db.collection("vendeurs").add({
+    nom: nom, code: code, tel: tel,
+    actif: true, dateCreation: new Date().toISOString()
+  }).then(function() {
+    document.getElementById("nouveauVendeurNom").value = "";
+    document.getElementById("nouveauVendeurTel").value = "";
+    chargerVendeurs();
+    afficherModalCode(nom, code, tel);
+  });
+}
+
+function chargerVendeurs() {
+  if (!db) return;
+  db.collection("vendeurs").orderBy("dateCreation", "desc").get()
+    .then(function(snap) {
+      var html = "";
+      if (snap.empty) {
+        html = '<div style="color:var(--dim);font-size:13px;padding:10px;">Aucun vendeur créé</div>';
+      } else {
+        html = '<table class="stbl"><thead><tr><th>Nom</th><th>Tel</th><th>Code</th><th>Statut</th><th></th></tr></thead><tbody>';
+        snap.forEach(function(doc) {
+          var d = doc.data();
+          var stCls = d.actif ? "st-dispo" : "st-utilise";
+          var stTxt = d.actif ? "Actif" : "Désactivé";
+          var tel = d.tel || "";
+          html += '<tr>' +
+            '<td style="font-weight:600;">' + d.nom + '</td>' +
+            '<td style="font-size:12px;color:var(--dim);">' + (tel || "—") + '</td>' +
+            '<td><span class="code-mono" style="font-size:14px;letter-spacing:2px;">' + d.code + '</span></td>' +
+            '<td><span class="st-badge ' + stCls + '">' + stTxt + '</span></td>' +
+            '<td style="display:flex;gap:4px;flex-wrap:wrap;">' +
+              '<button onclick="regenCode(\'' + doc.id + '\',\'' + d.nom + '\',\'' + tel + '\')" ' +
+                'style="background:none;border:1px solid var(--bdr);border-radius:6px;color:var(--vert);cursor:pointer;padding:4px 8px;font-size:12px;">Nouveau code</button>' +
+              '<button onclick="toggleVendeur(\'' + doc.id + '\',' + d.actif + ')" ' +
+                'style="background:none;border:1px solid var(--bdr);border-radius:6px;color:var(--dim);cursor:pointer;padding:4px 8px;font-size:12px;">' +
+                (d.actif ? "Désactiver" : "Activer") + '</button>' +
+              '<button onclick="supprimerVendeur(\'' + doc.id + '\',\'' + d.nom + '\')" ' +
+                'style="background:none;border:1px solid var(--bdr);border-radius:6px;color:var(--rouge);cursor:pointer;padding:4px 8px;font-size:12px;">X</button>' +
+            '</td>' +
+          '</tr>';
+        });
+        html += '</tbody></table>';
+      }
+      document.getElementById("listeVendeurs").innerHTML = html;
+    });
+}
+
+function toggleVendeur(id, actifActuel) {
+  if (!db) return;
+  db.collection("vendeurs").doc(id).update({ actif: !actifActuel })
+    .then(function() { chargerVendeurs(); toast("Statut vendeur mis à jour"); });
+}
+
+function supprimerVendeur(id, nom) {
+  if (!confirm("Supprimer le vendeur \"" + nom + "\" ?")) return;
+  if (!db) return;
+  db.collection("vendeurs").doc(id).delete()
+    .then(function() { chargerVendeurs(); chargerEquipe(); toast("Vendeur supprimé"); });
+}
+
+function regenCode(id, nom, tel) {
+  if (!confirm("Générer un nouveau code pour " + nom + " ?")) return;
+  if (!db) return;
+  var chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  var code = "";
+  for (var i = 0; i < 6; i++) code += chars[Math.floor(Math.random() * chars.length)];
+  db.collection("vendeurs").doc(id).update({ code: code })
+    .then(function() {
+      chargerVendeurs();
+      chargerEquipe();
+      afficherModalCode(nom, code, tel || "");
+    });
+}
+
+function afficherModalCode(nom, code, tel) {
+  document.getElementById("modalCodeNom").textContent = nom;
+  document.getElementById("modalCodeVal").textContent = code;
+
+  // Préparer le message WhatsApp
+  var msg = "Bonjour " + nom + ",\n\nVotre nouveau code d'acces Vente PRO :\n\n*" + code + "*\n\nApplication : https://ticket.startech-pro.com\n\nStartech BUSINESS · Kaya";
+  var telNum = tel.replace(/\s/g, "").replace(/^\+/, "");
+  var btnWA = document.getElementById("modalCodeWA");
+  if (tel) {
+    btnWA.style.display = "flex";
+    btnWA.onclick = function() {
+      window.open("https://wa.me/" + telNum + "?text=" + encodeURIComponent(msg), "_blank");
+    };
+  } else {
+    btnWA.style.display = "none";
+  }
+  // Bouton copier
+  document.getElementById("modalCodeCopier").onclick = function() {
+    var tmp = document.createElement("textarea");
+    tmp.value = msg;
+    document.body.appendChild(tmp);
+    tmp.select();
+    document.execCommand("copy");
+    document.body.removeChild(tmp);
+    toast("Message copié !");
+  };
+
+  document.getElementById("modalNouveauCode").classList.add("on");
+}
+
+function changerMonCode() {
+  if (!db) { toast("Firebase non connecté", true); return; }
+  var errEl = document.getElementById("changCodeErr");
+  var ancien  = document.getElementById("ancienCode").value.trim().toUpperCase();
+  var nouveau = document.getElementById("nouveauCode").value.trim().toUpperCase();
+  var confirm2 = document.getElementById("confirmCode").value.trim().toUpperCase();
+
+  errEl.textContent = "";
+
+  if (!ancien) { errEl.textContent = "Entrez votre code actuel"; return; }
+  if (!nouveau || nouveau.length < 4) { errEl.textContent = "Nouveau code trop court (min 4 caractères)"; return; }
+  if (nouveau !== confirm2) { errEl.textContent = "Les deux codes ne correspondent pas"; return; }
+  if (nouveau === ancien) { errEl.textContent = "Le nouveau code doit être différent"; return; }
+
+  // Vérifier que l'ancien code est correct
+  db.collection("vendeurs").where("code", "==", ancien).where("nom", "==", nomVendeur).get()
+    .then(function(snap) {
+      if (snap.empty) {
+        errEl.textContent = "Code actuel incorrect";
+        return;
+      }
+      // Vérifier que le nouveau code n'est pas déjà utilisé
+      db.collection("vendeurs").where("code", "==", nouveau).get()
+        .then(function(snapNouv) {
+          if (!snapNouv.empty) {
+            errEl.textContent = "Ce code est déjà utilisé par un autre vendeur";
+            return;
+          }
+          // Mettre à jour
+          snap.docs[0].ref.update({ code: nouveau }).then(function() {
+            toast("Code changé avec succès !");
+            document.getElementById("ancienCode").value = "";
+            document.getElementById("nouveauCode").value = "";
+            document.getElementById("confirmCode").value = "";
+            // Déconnecter pour forcer la reconnexion avec le nouveau code
+            setTimeout(function() {
+              toast("Reconnectez-vous avec votre nouveau code");
+              seDeconnecter();
+            }, 1500);
+          });
+        });
+    });
+}
+
+function ouvrirEditVendeur(id, nom, code) {
+  editVendeurId = id;
+  document.getElementById("editVendeurNom").value = nom;
+  document.getElementById("editVendeurCode").value = code;
+  document.getElementById("modalEditVendeur").classList.add("on");
+}
+
+function fermerEditVendeur() {
+  document.getElementById("modalEditVendeur").classList.remove("on");
+  editVendeurId = null;
+}
+
+function sauvegarderEditVendeur() {
+  if (!db || !editVendeurId) return;
+  var nom = document.getElementById("editVendeurNom").value.trim();
+  var code = document.getElementById("editVendeurCode").value.trim().toUpperCase();
+  if (!nom || !code) { toast("Nom et code obligatoires", true); return; }
+  if (code.length < 4) { toast("Code trop court (min 4 caractères)", true); return; }
+
+  db.collection("vendeurs").doc(editVendeurId).update({ nom: nom, code: code })
+    .then(function() {
+      fermerEditVendeur();
+      chargerVendeurs();
+      chargerEquipe();
+      toast("Vendeur mis à jour");
+    });
+}
+
+// ====================================================
+// 1. TICKET PHYSIQUE
+// ====================================================
+function afficherTicketPhysique(code, forfait) {
+  var now = new Date();
+  var ds = ("0"+now.getDate()).slice(-2)+"/"+("0"+(now.getMonth()+1)).slice(-2)+"/"+now.getFullYear()
+           +" "+("0"+now.getHours()).slice(-2)+":"+("0"+now.getMinutes()).slice(-2);
+  var zone = document.getElementById("ticketPrintContent");
+  zone.innerHTML =
+    '<div class="tpz-header">' +
+      '<div class="tpz-logo">STARTECH WiFi Zone</div>' +
+      '<div style="font-size:10px;color:#999;">Kaya · Burkina Faso</div>' +
+    '</div>' +
+    '<div class="tpz-code">' + code + '</div>' +
+    '<div class="tpz-row"><span>Forfait</span><span>' + forfait.label + '</span></div>' +
+    '<div class="tpz-row"><span>Prix</span><span>' + fmt(forfait.prix) + ' FCFA</span></div>' +
+    '<div class="tpz-row"><span>Validite</span><span>' + forfait.unite + '</span></div>' +
+    '<div class="tpz-row"><span>Date</span><span>' + ds + '</span></div>' +
+    '<div class="tpz-footer">Merci · +226 70 60 81 48</div>';
+  document.getElementById("ticketPhysiqueZone").style.display = "block";
+}
+
+function imprimerTicket() { window.print(); }
+
+// ====================================================
+// 2. MINUTERIE
+// ====================================================
+var minuterieTimer = null;
+var minuterieSecondes = 0;
+
+function demarrerMinuterie(forfait) {
+  var durees = { "4H":14400, "1J":86400, "1S":604800, "1M":2592000 };
+  minuterieSecondes = durees[forfait.id] || 14400;
+  document.getElementById("minuterieZone").style.display = "block";
+  document.getElementById("minuterieForfait").textContent = forfait.label;
+  clearInterval(minuterieTimer);
+  minuterieTimer = setInterval(function() {
+    minuterieSecondes--;
+    if (minuterieSecondes <= 0) { clearInterval(minuterieTimer); minuterieSecondes = 0; }
+    var h = Math.floor(minuterieSecondes / 3600);
+    var m = Math.floor((minuterieSecondes % 3600) / 60);
+    var s = minuterieSecondes % 60;
+    var txt = ("0"+h).slice(-2)+":"+("0"+m).slice(-2)+":"+("0"+s).slice(-2);
+    var el = document.getElementById("minuterieDisplay");
+    el.textContent = txt;
+    el.className = "minuterie-display" + (minuterieSecondes < 300 ? " alerte" : "");
+  }, 1000);
+}
+
+function arreterMinuterie() {
+  clearInterval(minuterieTimer);
+  document.getElementById("minuterieZone").style.display = "none";
+}
+
+// ====================================================
+// 3. ALERTE STOCK FAIBLE
+// ====================================================
+function verifierAlerteStock() {
+  var SEUIL = 5;
+  var alertes = [];
+  for (var i = 0; i < FORFAITS.length; i++) {
+    var n = compterDispo(FORFAITS[i].id);
+    if (n <= SEUIL && n > 0) alertes.push(FORFAITS[i].label + " : " + n + " restant(s)");
+    if (n === 0 && stock.length > 0) alertes.push(FORFAITS[i].label + " : ÉPUISÉ");
+  }
+  var el = document.getElementById("alerteStock");
+  if (alertes.length > 0) {
+    el.style.display = "block";
+    el.innerHTML = "⚠ Stock faible : " + alertes.join(" · ");
+  } else {
+    el.style.display = "none";
+  }
+}
+
+// ====================================================
+// 4. GRAPHIQUES
+// ====================================================
+function renderGraphiques() {
+  if (!db) return;
+  db.collection("ventes").orderBy("date","desc").limit(500).get().then(function(snap) {
+    var data = [];
+    snap.forEach(function(d) { data.push(d.data()); });
+
+    // Recettes totales
+    var totalR = 0;
+    var totalN = data.length;
+    for (var i = 0; i < data.length; i++) totalR += (data[i].prix || 0);
+
+    var rb = document.getElementById("graphRecettes");
+    rb.innerHTML =
+      '<div class="rb-card"><div class="rb-val">' + fmt(totalR) + ' F</div><div class="rb-label">Total recettes</div></div>' +
+      '<div class="rb-card"><div class="rb-val">' + totalN + '</div><div class="rb-label">Total ventes</div></div>';
+
+    // Par forfait
+    var parForfait = {};
+    for (var j = 0; j < data.length; j++) {
+      var id = data[j].forfait || "?";
+      var lbl = data[j].forfaitLabel || id;
+      if (!parForfait[id]) parForfait[id] = { label:lbl, nb:0, total:0 };
+      parForfait[id].nb++;
+      parForfait[id].total += (data[j].prix || 0);
+    }
+
+    // Par vendeur
+    var parVendeur = {};
+    for (var k = 0; k < data.length; k++) {
+      var v = data[k].vendeur || "Inconnu";
+      if (!parVendeur[v]) parVendeur[v] = { nb:0, total:0 };
+      parVendeur[v].nb++;
+      parVendeur[v].total += (data[k].prix || 0);
+    }
+
+    // 7 derniers jours
+    var parJour = {};
+    var now = new Date();
+    for (var d2 = 6; d2 >= 0; d2--) {
+      var dd = new Date(now); dd.setDate(dd.getDate() - d2);
+      var key = ("0"+dd.getDate()).slice(-2)+"/"+("0"+(dd.getMonth()+1)).slice(-2);
+      parJour[key] = 0;
+    }
+    for (var m = 0; m < data.length; m++) {
+      var dt = new Date(data[m].date);
+      var dkey = ("0"+dt.getDate()).slice(-2)+"/"+("0"+(dt.getMonth()+1)).slice(-2);
+      if (parJour[dkey] !== undefined) parJour[dkey] += (data[m].prix || 0);
+    }
+
+    var maxJ = 1; for (var kj in parJour) if (parJour[kj] > maxJ) maxJ = parJour[kj];
+    var maxF = 1; for (var kf in parForfait) if (parForfait[kf].total > maxF) maxF = parForfait[kf].total;
+    var maxV = 1; for (var kv in parVendeur) if (parVendeur[kv].total > maxV) maxV = parVendeur[kv].total;
+
+    function barChart(obj, maxVal, valKey) {
+      var h = "";
+      for (var k2 in obj) {
+        var val = obj[k2][valKey] !== undefined ? obj[k2][valKey] : obj[k2];
+        var lbl2 = obj[k2].label || k2;
+        var pct = Math.round((val / maxVal) * 100);
+        h += '<div class="bar-row">' +
+          '<div class="bar-lbl">' + lbl2 + '</div>' +
+          '<div class="bar-track"><div class="bar-fill" style="width:' + pct + '%"></div></div>' +
+          '<div class="bar-val">' + fmt(val) + ' F</div>' +
+        '</div>';
+      }
+      return h;
+    }
+
+    function barChartSimple(obj, maxVal) {
+      var h = "";
+      for (var k3 in obj) {
+        var val3 = obj[k3];
+        var pct3 = Math.round((val3 / maxVal) * 100);
+        h += '<div class="bar-row">' +
+          '<div class="bar-lbl">' + k3 + '</div>' +
+          '<div class="bar-track"><div class="bar-fill" style="width:' + pct3 + '%"></div></div>' +
+          '<div class="bar-val">' + fmt(val3) + ' F</div>' +
+        '</div>';
+      }
+      return h;
+    }
+
+    document.getElementById("graphGrid").innerHTML =
+      '<div class="graph-card"><div class="graph-title">Recettes par forfait</div>' + barChart(parForfait, maxF, "total") + '</div>' +
+      '<div class="graph-card"><div class="graph-title">Recettes par vendeur</div>' + barChart(parVendeur, maxV, "total") + '</div>' +
+      '<div class="graph-card"><div class="graph-title">7 derniers jours</div>' + barChartSimple(parJour, maxJ) + '</div>';
+  });
+}
+
+// ====================================================
+// 5. CREDIT CLIENT
+// ====================================================
+var credits = JSON.parse(localStorage.getItem("stw_credits") || "[]");
+
+function initCreditForfaitSel() {
+  var sel = document.getElementById("creditForfait");
+  if (!sel) return;
+  sel.innerHTML = "";
+  for (var i = 0; i < FORFAITS.length; i++) {
+    var o = document.createElement("option");
+    o.value = FORFAITS[i].id;
+    o.textContent = FORFAITS[i].label + " — " + fmt(FORFAITS[i].prix) + " FCFA";
+    sel.appendChild(o);
+  }
+}
+
+function ajouterCredit() {
+  var nom = document.getElementById("creditNom").value.trim();
+  var tel = document.getElementById("creditTel").value.trim();
+  var forfaitId = document.getElementById("creditForfait").value;
+  var montant = parseInt(document.getElementById("creditMontant").value, 10);
+  var note = document.getElementById("creditNote").value.trim();
+
+  if (!nom || isNaN(montant) || montant <= 0) { toast("Nom et montant obligatoires", true); return; }
+
+  var forfait = null;
+  for (var i = 0; i < FORFAITS.length; i++) { if (FORFAITS[i].id === forfaitId) { forfait = FORFAITS[i]; break; } }
+
+  var credit = {
+    id: "C" + Date.now(), nom: nom, tel: tel,
+    forfait: forfaitId, forfaitLabel: forfait ? forfait.label : forfaitId,
+    montantDu: montant, montantPaye: 0,
+    date: new Date().toISOString(), note: note, solde: false
+  };
+
+  if (db) {
+    db.collection("credits").doc(credit.id).set(credit).then(function() {
+      toast("Credit enregistré pour " + nom);
+      renderCredits();
+    });
+  } else {
+    credits.unshift(credit);
+    localStorage.setItem("stw_credits", JSON.stringify(credits));
+    toast("Credit enregistré pour " + nom);
+    renderCredits();
+  }
+
+  document.getElementById("creditNom").value = "";
+  document.getElementById("creditTel").value = "";
+  document.getElementById("creditMontant").value = "";
+  document.getElementById("creditNote").value = "";
+}
+
+function renderCredits() {
+  var container = document.getElementById("creditList");
+  var charger = function(data) {
+    if (data.length === 0) {
+      container.innerHTML = '<div class="empty"><div class="empty-t">Aucun credit</div></div>';
+      return;
+    }
+    var total = 0;
+    for (var i = 0; i < data.length; i++) { if (!data[i].solde) total += (data[i].montantDu - data[i].montantPaye); }
+    var html = '<div class="total-bar" style="margin-bottom:12px;">' +
+      '<span style="font-size:14px;color:var(--dim);">Total dettes</span>' +
+      '<span style="font-size:20px;font-weight:700;color:var(--rouge);font-family:JetBrains Mono,monospace;">' + fmt(total) + ' FCFA</span>' +
+    '</div>';
+
+    for (var j = 0; j < data.length; j++) {
+      var c = data[j];
+      var reste = c.montantDu - c.montantPaye;
+      html += '<div class="credit-card">' +
+        '<div class="credit-top">' +
+          '<div>' +
+            '<div class="credit-nom">' + c.nom + (c.tel ? ' · ' + c.tel : '') + '</div>' +
+            '<div style="font-size:12px;color:var(--dim);">' + (c.forfaitLabel||c.forfait) + ' · ' + new Date(c.date).toLocaleDateString("fr-FR") + '</div>' +
+          '</div>' +
+          '<div style="text-align:right;">' +
+            '<div class="credit-montant">' + fmt(reste) + ' F</div>' +
+            '<span class="' + (c.solde ? "badge-solde" : "badge-dette") + '">' + (c.solde ? "Soldé" : "Doit") + '</span>' +
+          '</div>' +
+        '</div>' +
+        (c.note ? '<div style="font-size:12px;color:var(--dim);margin-top:6px;">' + c.note + '</div>' : '') +
+        '<div style="display:flex;gap:6px;margin-top:10px;">' +
+          (!c.solde ? '<button onclick="payerCredit(\'' + c.id + '\')" style="flex:1;padding:7px;background:var(--vert);border:none;border-radius:7px;color:#fff;font-size:13px;font-weight:700;cursor:pointer;">Paye</button>' : '') +
+          '<button onclick="supprimerCredit(\'' + c.id + '\')" style="padding:7px 10px;background:transparent;border:1px solid var(--bdr);border-radius:7px;color:var(--dim);cursor:pointer;font-size:13px;">X</button>' +
+        '</div>' +
+      '</div>';
+    }
+    container.innerHTML = html;
+  };
+
+  if (db) {
+    db.collection("credits").orderBy("date","desc").get().then(function(snap) {
+      var data = []; snap.forEach(function(d) { data.push(d.data()); });
+      charger(data);
+    });
+  } else { charger(credits); }
+}
+
+function payerCredit(id) {
+  if (db) {
+    db.collection("credits").doc(id).update({ solde: true, montantPaye: 99999 })
+      .then(function() { toast("Credit soldé"); renderCredits(); });
+  } else {
+    for (var i = 0; i < credits.length; i++) {
+      if (credits[i].id === id) { credits[i].solde = true; break; }
+    }
+    localStorage.setItem("stw_credits", JSON.stringify(credits));
+    toast("Credit soldé"); renderCredits();
+  }
+}
+
+function supprimerCredit(id) {
+  if (!confirm("Supprimer ce credit ?")) return;
+  if (db) {
+    db.collection("credits").doc(id).delete().then(function() { toast("Supprimé"); renderCredits(); });
+  } else {
+    credits = credits.filter(function(c) { return c.id !== id; });
+    localStorage.setItem("stw_credits", JSON.stringify(credits));
+    toast("Supprimé"); renderCredits();
+  }
+}
+
+// ====================================================
+// 6. MODE HORS-LIGNE
+// ====================================================
+function initOffline() {
+  window.addEventListener("online", function() {
+    document.getElementById("offlineBar").style.display = "none";
+    toast("Connexion rétablie");
+    initFirebase();
+  });
+  window.addEventListener("offline", function() {
+    document.getElementById("offlineBar").style.display = "block";
+    toast("Hors-ligne — mode local activé", true);
+    // Charger depuis localStorage en fallback
+    if (!db || stock.length === 0) {
+      stock  = JSON.parse(localStorage.getItem("stw_stock_cache")  || "[]");
+      ventes = JSON.parse(localStorage.getItem("stw_ventes_cache") || "[]");
+      FORFAITS = JSON.parse(localStorage.getItem("stw_forfaits") || "null") || FORFAITS_DEFAULT_DATA;
+      updateNavStock();
+    }
+  });
+  if (!navigator.onLine) {
+    document.getElementById("offlineBar").style.display = "block";
+  }
+}
+
+// Cache local pour hors-ligne
+function cacheLocal() {
+  localStorage.setItem("stw_stock_cache",  JSON.stringify(stock));
+  localStorage.setItem("stw_ventes_cache", JSON.stringify(ventes));
+}
+
+// ====================================================
+// 7. RAPPORT WHATSAPP
+// ====================================================
+function envoyerRapportWA() {
+  var auj = new Date(); auj.setHours(0,0,0,0);
+  var ventesAuj = ventes.filter(function(v) { return new Date(v.date) >= auj; });
+  var total = 0;
+  for (var i = 0; i < ventesAuj.length; i++) total += (ventesAuj[i].prix || 0);
+
+  var parForfait = {};
+  for (var j = 0; j < ventesAuj.length; j++) {
+    var lbl = ventesAuj[j].forfaitLabel || ventesAuj[j].forfait;
+    if (!parForfait[lbl]) parForfait[lbl] = 0;
+    parForfait[lbl]++;
+  }
+
+  var lignes = "";
+  for (var k in parForfait) lignes += "\n  - " + k + " : " + parForfait[k] + " ticket(s)";
+
+  var date = new Date().toLocaleDateString("fr-FR");
+  var msg = "📊 *RAPPORT JOURNALIER — Vente PRO*\n" +
+    "📅 " + date + "\n\n" +
+    "💰 Recettes du jour : *" + fmt(total) + " FCFA*\n" +
+    "🎫 Tickets vendus : *" + ventesAuj.length + "*\n" +
+    "📋 Détail :" + (lignes || "\n  Aucune vente") + "\n\n" +
+    "📞 70 60 81 48 / 76 87 50 52";
+
+  var url = "https://wa.me/?text=" + encodeURIComponent(msg);
+  window.open(url, "_blank");
+}
+
+// ====================================================
+// Export CSV
+// ====================================================
+function exportCSV() {
+  var csv = "Date,Vendeur,Forfait,Code,Prix,Paiement\n";
+  for (var i = 0; i < ventes.length; i++) {
+    var v = ventes[i];
+    csv += [v.date, v.vendeur||"", v.forfaitLabel||v.forfait, v.code, v.prix, labelPay(v.modePay||"")].join(",") + "\n";
+  }
+  var blob = new Blob([csv], { type:"text/csv" });
+  var a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "ventes-" + new Date().toISOString().slice(0,10) + ".csv";
+  a.click();
+}
+
+// ====================================================
+// EQUIPE — Vendeurs + Stats
+// ====================================================
+var chatListener = null;
+
+function chargerEquipe() {
+  if (!db) return;
+  // Charger vendeurs avec stats
+  db.collection("vendeurs").orderBy("dateCreation","desc").get().then(function(snapV) {
+    var vendeurs = [];
+    snapV.forEach(function(d) { vendeurs.push({ id:d.id, data:d.data() }); });
+
+    // Compter les ventes par vendeur
+    db.collection("ventes").get().then(function(snapVentes) {
+      var statsVendeur = {};
+      var recettesVendeur = {};
+      snapVentes.forEach(function(d) {
+        var v = d.data();
+        var nom = v.vendeur || "Inconnu";
+        if (!statsVendeur[nom]) { statsVendeur[nom] = 0; recettesVendeur[nom] = 0; }
+        statsVendeur[nom]++;
+        recettesVendeur[nom] += (v.prix || 0);
+      });
+
+      var html = "";
+      if (vendeurs.length === 0) {
+        html = '<div class="empty"><div class="empty-t">Aucun vendeur</div><div>Créez des vendeurs dans la page Patron</div></div>';
+      } else {
+        for (var i = 0; i < vendeurs.length; i++) {
+          var v = vendeurs[i].data;
+          var initiale = v.nom ? v.nom.charAt(0).toUpperCase() : "?";
+          var nbVentes = statsVendeur[v.nom] || 0;
+          var recettes = recettesVendeur[v.nom] || 0;
+          html += '<div class="vendeur-card">' +
+            '<div class="vendeur-avatar">' + initiale + '</div>' +
+            '<div class="vendeur-infos">' +
+              '<div class="vendeur-nom">' + v.nom + '</div>' +
+              '<div class="vendeur-code">' + v.code + '</div>' +
+              '<div class="vendeur-stats">' + nbVentes + ' vente(s) · ' + fmt(recettes) + ' FCFA</div>' +
+            '</div>' +
+            '<span class="vendeur-statut ' + (v.actif ? "vs-actif" : "vs-inactif") + '">' +
+              (v.actif ? "Actif" : "Inactif") +
+            '</span>' +
+          '</div>';
+        }
+      }
+      document.getElementById("equipeList").innerHTML = html;
+    });
+  });
+
+  // Démarrer l'écoute du chat
+  demarrerChatListener();
+}
+
+// ====================================================
+// CHAT TEMPS RÉEL
+// ====================================================
+function switchEqTab(tab) {
+  var isVendeurs = (tab === "vendeurs");
+  document.getElementById("eqVendeurs").style.display = isVendeurs ? "block" : "none";
+  document.getElementById("eqChat").style.display = isVendeurs ? "none" : "block";
+  document.getElementById("eqTabVendeurs").classList.toggle("on", isVendeurs);
+  document.getElementById("eqTabChat").classList.toggle("on", !isVendeurs);
+
+  if (!isVendeurs) {
+    // Masquer badge non lu
+    document.getElementById("chatBadge").style.display = "none";
+    document.getElementById("chatBadge").textContent = "0";
+    // Scroll en bas
+    setTimeout(function() {
+      var el = document.getElementById("chatMessages");
+      if (el) el.scrollTop = el.scrollHeight;
+    }, 100);
+  }
+}
+
+function demarrerChatListener() {
+  if (!db) return;
+  if (chatListener) chatListener(); // Arrêter l'ancien listener
+
+  chatListener = db.collection("chat")
+    .orderBy("date", "asc")
+    .limitToLast(100)
+    .onSnapshot(function(snap) {
+      var messages = [];
+      snap.forEach(function(d) { messages.push(d.data()); });
+      afficherMessages(messages);
+
+      // Badge si chat pas visible
+      var chatVisible = document.getElementById("eqChat").style.display !== "none";
+      var pgEquipeVisible = document.getElementById("pg-equipe").classList.contains("on");
+      if (!chatVisible || !pgEquipeVisible) {
+        if (messages.length > 0) {
+          var badge = document.getElementById("chatBadge");
+          badge.style.display = "inline";
+          badge.textContent = "!";
+        }
+      }
+    });
+}
+
+function afficherMessages(messages) {
+  var container = document.getElementById("chatMessages");
+  if (!container) return;
+
+  if (messages.length === 0) {
+    container.innerHTML = '<div class="msg-bubble msg-systeme">Pas encore de messages — commencez la conversation !</div>';
+    return;
+  }
+
+  var html = "";
+  for (var i = 0; i < messages.length; i++) {
+    var m = messages[i];
+    var estMoi = (m.auteur === nomVendeur);
+    var d = new Date(m.date);
+    var heure = ("0"+d.getHours()).slice(-2)+":"+("0"+d.getMinutes()).slice(-2);
+
+    if (m.type === "systeme") {
+      html += '<div class="msg-bubble msg-systeme">' + m.texte + '</div>';
+      continue;
+    }
+
+    var extraCls = (m.role === "patron") ? " msg-patron-badge" : "";
+    html += '<div class="msg-bubble ' + (estMoi ? "msg-moi" : "msg-autre" + extraCls) + '">' +
+      (!estMoi ? '<div class="msg-nom">' + (m.role === "patron" ? "👑 " : "") + m.auteur + '</div>' : '') +
+      '<div>' + escHtml(m.texte) + '</div>' +
+      '<div class="msg-heure">' + heure + '</div>' +
+    '</div>';
+  }
+  container.innerHTML = html;
+  container.scrollTop = container.scrollHeight;
+}
+
+function envoyerMessage() {
+  if (!db) { toast("Firebase non connecté", true); return; }
+  var input = document.getElementById("chatInput");
+  var texte = input.value.trim();
+  if (!texte) return;
+
+  var msg = {
+    id: "M" + Date.now(),
+    auteur: nomVendeur,
+    role: roleActuel,
+    texte: texte,
+    date: new Date().toISOString(),
+    type: "message"
+  };
+
+  db.collection("chat").doc(msg.id).set(msg).then(function() {
+    input.value = "";
+  });
+}
+
+// ====================================================
 init();
 initFirebase();
+initOffline();
 </script>
 </body>
 </html>

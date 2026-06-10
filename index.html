@@ -816,12 +816,15 @@ function afficherQR(code, forfait) {
   var zone = document.getElementById("qrZone");
   zone.innerHTML = "";
 
+  // URL complète du portail captif MikroTik
+  var urlPortail = "http://" + PARAMS.ip + "/login?username=" + code + "&password=" + code;
+
   var wrap = document.createElement("div");
   wrap.className = "qr-result";
 
   var hdr = document.createElement("div");
   hdr.className = "qr-result-header";
-  hdr.textContent = "📡 STARTECH WiFi Zone · Scannez pour vous connecter";
+  hdr.textContent = "Scannez pour vous connecter";
   wrap.appendChild(hdr);
 
   var canvasWrap = document.createElement("div");
@@ -830,9 +833,9 @@ function afficherQR(code, forfait) {
 
   try {
     new QRCode(canvasWrap, {
-      text: code,
-      width: 160,
-      height: 160,
+      text: urlPortail,
+      width: 180,
+      height: 180,
       colorDark: "#000",
       colorLight: "#fff",
       correctLevel: QRCode.CorrectLevel.M
@@ -848,7 +851,7 @@ function afficherQR(code, forfait) {
 
   var fEl = document.createElement("div");
   fEl.className = "qr-forfait-info";
-  fEl.textContent = forfait.icone + " " + forfait.label + " · " + forfait.debit;
+  fEl.textContent = forfait.label + " · " + forfait.debit;
   wrap.appendChild(fEl);
 
   var pEl = document.createElement("div");

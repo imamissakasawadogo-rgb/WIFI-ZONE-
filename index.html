@@ -541,11 +541,8 @@ body { font-family:"Inter",sans-serif; background:var(--noir); color:var(--txt);
 
     <div class="histo-filters">
       <button class="flt on" onclick="filtreHisto('tout',this)">Tout</button>
-      <button class="flt" onclick="filtreHisto('1H',this)">1H</button>
-      <button class="flt" onclick="filtreHisto('3H',this)">3H</button>
-      <button class="flt" onclick="filtreHisto('6H',this)">6H</button>
+      <button class="flt" onclick="filtreHisto('4H',this)">4 Heures</button>
       <button class="flt" onclick="filtreHisto('1J',this)">1 Jour</button>
-      <button class="flt" onclick="filtreHisto('3J',this)">3 Jours</button>
       <button class="flt" onclick="filtreHisto('1S',this)">1 Semaine</button>
       <button class="flt" onclick="filtreHisto('1M',this)">1 Mois</button>
       <button class="flt" style="margin-left:auto;border-color:var(--or);color:var(--or);" onclick="exportCSV()">⬇ CSV</button>
@@ -644,17 +641,14 @@ body { font-family:"Inter",sans-serif; background:var(--noir); color:var(--txt);
 // CONFIG FORFAITS
 // ====================================================
 var FORFAITS_DEFAULT_DATA = [
-  { id:"1H",  label:"1 Heure",    unite:"heure",   debit:"3 Mbps",  prix:200,   badge:"",    icone:"⚡" },
-  { id:"3H",  label:"3 Heures",   unite:"heures",  debit:"3 Mbps",  prix:500,   badge:"pop", icone:"🌐" },
-  { id:"6H",  label:"6 Heures",   unite:"heures",  debit:"5 Mbps",  prix:800,   badge:"",    icone:"📱" },
-  { id:"1J",  label:"1 Jour",     unite:"24h",     debit:"5 Mbps",  prix:1000,  badge:"promo",icone:"☀️" },
-  { id:"3J",  label:"3 Jours",    unite:"72h",     debit:"8 Mbps",  prix:2500,  badge:"",    icone:"📅" },
-  { id:"1S",  label:"1 Semaine",  unite:"7 jours", debit:"8 Mbps",  prix:5000,  badge:"",    icone:"🗓️" },
-  { id:"1M",  label:"1 Mois",     unite:"30 jours",debit:"10 Mbps", prix:15000, badge:"pro", icone:"💎" }
+  { id:"4H", label:"4 Heures",  unite:"4h",      debit:"Illimitée", prix:100,  badge:"pop",   icone:"⚡" },
+  { id:"1J", label:"1 Jour",    unite:"24h",      debit:"Illimitée", prix:200,  badge:"promo", icone:"☀️" },
+  { id:"1S", label:"1 Semaine", unite:"7 jours",  debit:"Illimitée", prix:500,  badge:"",      icone:"📅" },
+  { id:"1M", label:"1 Mois",    unite:"30 jours", debit:"Illimitée", prix:1500, badge:"pro",   icone:"💎" }
 ];
-var FORFAITS = JSON.parse(localStorage.getItem("stw_forfaits") || "null") || FORFAITS_DEFAULT_DATA;
+var FORFAITS = FORFAITS_DEFAULT_DATA.slice();
 
-// PARAMETRES
+// PARAMETRES (toujours local — propre à chaque téléphone)
 var PARAMS = JSON.parse(localStorage.getItem("stw_params") || "null") || {
   ip: "192.168.88.1",
   ssid: "Startech WiFi Zone",
@@ -663,16 +657,14 @@ var PARAMS = JSON.parse(localStorage.getItem("stw_params") || "null") || {
 };
 
 // ====================================================
-// ÉTAT
+// ÉTAT — tout vient de Firebase
 // ====================================================
-var stock = JSON.parse(localStorage.getItem("stw_stock") || "[]");
-// stock[i] = { code, forfait, duree, prix, utilise:false }
-
-var ventes = JSON.parse(localStorage.getItem("stw_ventes") || "[]");
-
+var stock  = [];
+var ventes = [];
 var selForfait = null;
-var selCode = null;
-var modePay = "espece";
+var selCode    = null;
+var modePay    = "espece";
+var fbPret     = false;
 
 // ====================================================
 // INIT
@@ -805,26 +797,21 @@ function renderForfaits() {
 // SÉLECTION FORFAIT → PIOCHE UN CODE
 // ====================================================
 function selectionForfait(id) {
+  if (!db) { toast("Firebase non connecté", true); return; }
   var f = null;
   for (var i = 0; i < FORFAITS.length; i++) {
     if (FORFAITS[i].id === id) { f = FORFAITS[i]; break; }
   }
   if (!f) return;
 
-  // Pioche le prochain code disponible
   var code = piocher(id);
   if (!code) {
-    if (stock.length === 0) {
-      toast("⚠ Aucun stock chargé. Importez un CSV dans Stock CSV.", true);
-    } else {
-      toast("Stock épuisé pour ce forfait !", true);
-    }
+    toast(stock.length === 0 ? "Aucun stock chargé" : "Stock épuisé pour ce forfait !", true);
     return;
   }
 
   selForfait = f;
   selCode = code;
-
   renderForfaits();
   afficherQR(code, f);
 }
@@ -939,33 +926,33 @@ function selPay(el, mode) {
 // VALIDER VENTE
 // ====================================================
 function validerVente() {
-  if (!selForfait || !selCode) return;
+  if (!selForfait || !selCode || !db) return;
 
-  // Marquer code comme utilisé dans le stock
-  for (var i = 0; i < stock.length; i++) {
-    if (stock[i].code === selCode) { stock[i].utilise = true; break; }
-  }
-  localStorage.setItem("stw_stock", JSON.stringify(stock));
+  var code = selCode;
+  var forfait = selForfait;
 
-  // Enregistrer la vente
+  // Marquer code utilisé dans Firebase
+  db.collection("stock").where("code", "==", code).limit(1).get()
+    .then(function(snap) {
+      if (!snap.empty) {
+        snap.docs[0].ref.update({ utilise: true });
+      }
+    });
+
+  // Enregistrer la vente dans Firebase
   var vente = {
     id: "V" + Date.now(),
     date: new Date().toISOString(),
-    forfait: selForfait.id,
-    forfaitLabel: selForfait.label,
-    code: selCode,
-    prix: selForfait.prix,
+    forfait: forfait.id,
+    forfaitLabel: forfait.label,
+    code: code,
+    prix: forfait.prix,
     modePay: modePay,
     vendeur: nomVendeur
   };
-  ventes.unshift(vente);
-  localStorage.setItem("stw_ventes", JSON.stringify(ventes));
+  db.collection("ventes").doc(vente.id).set(vente);
 
-  // Envoyer à Firebase
-  envoyerVente(vente);
-
-  toast("Vente validée — " + fmt(selForfait.prix) + " FCFA");
-  updateNavStock();
+  toast("Vente validée — " + fmt(forfait.prix) + " FCFA");
   resetVente();
 }
 
@@ -1019,33 +1006,37 @@ dropArea.addEventListener("drop", function(e) {
 });
 
 function parseCSV(text, forfaitId) {
+  if (!db) { toast("Firebase non connecté", true); return; }
   var lines = text.split(/\r?\n/).filter(function(l) { return l.trim() !== ""; });
   if (lines.length < 1) { toast("Fichier vide", true); return; }
 
-  // Détecter si la première ligne est un header ou un code
   var firstLine = lines[0].trim().toLowerCase();
-  var startIdx = (firstLine === "code" || firstLine.indexOf("code") === 0) ? 1 : 0;
+  var startIdx = (firstLine === "code" || firstLine === "codes") ? 1 : 0;
 
-  var existants = {};
-  for (var k = 0; k < stock.length; k++) existants[stock[k].code] = true;
+  // Récupérer les codes déjà existants pour éviter doublons
+  db.collection("stock").where("forfait", "==", forfaitId).get()
+    .then(function(snap) {
+      var existants = {};
+      snap.forEach(function(doc) { existants[doc.data().code] = true; });
 
-  var nouveaux = 0;
-  var doublons = 0;
+      var batch = db.batch();
+      var nouveaux = 0;
+      var doublons = 0;
 
-  for (var i = startIdx; i < lines.length; i++) {
-    var cols = splitLine(lines[i]);
-    var code = (cols[0] || "").replace(/"/g, "").trim();
-    if (!code) continue;
-    if (existants[code]) { doublons++; continue; }
-    stock.push({ code: code, forfait: forfaitId, utilise: false });
-    existants[code] = true;
-    nouveaux++;
-  }
+      for (var i = startIdx; i < lines.length; i++) {
+        var cols = splitLine(lines[i]);
+        var code = (cols[0] || "").replace(/"/g, "").trim();
+        if (!code) continue;
+        if (existants[code]) { doublons++; continue; }
+        var ref = db.collection("stock").doc(forfaitId + "_" + code);
+        batch.set(ref, { code: code, forfait: forfaitId, utilise: false });
+        nouveaux++;
+      }
 
-  localStorage.setItem("stw_stock", JSON.stringify(stock));
-  updateNavStock();
-  renderStockTable();
-  toast(nouveaux + " codes importés pour " + forfaitId + (doublons > 0 ? " · " + doublons + " doublons ignorés" : ""));
+      batch.commit().then(function() {
+        toast(nouveaux + " codes importés pour " + forfaitId + (doublons > 0 ? " · " + doublons + " doublons ignorés" : ""));
+      });
+    });
 }
 
 function splitLine(line) {
@@ -1061,7 +1052,7 @@ function splitLine(line) {
 }
 
 // ====================================================
-// RENDER STOCK PAR FORFAIT
+// RENDER STOCK PAR FORFAIT — depuis Firebase
 // ====================================================
 function renderStockTable() {
   // Remplir le select d'import
@@ -1074,31 +1065,40 @@ function renderStockTable() {
     sel.appendChild(opt);
   }
 
-  var total = totalTickets();
-  var totalUsed = 0;
-  for (var j = 0; j < stock.length; j++) { if (stock[j].utilise) totalUsed++; }
+  if (!db) {
+    document.getElementById("stockParForfait").innerHTML =
+      '<div class="empty"><div class="empty-t">Firebase non connecté</div></div>';
+    return;
+  }
 
-  // Barre globale
+  document.getElementById("stockParForfait").innerHTML =
+    '<div class="empty"><div class="empty-t">Chargement...</div></div>';
+
+  db.collection("stock").get().then(function(snap) {
+    stock = [];
+    snap.forEach(function(doc) { stock.push(doc.data()); });
+    updateNavStock();
+    afficherStockParForfait();
+  });
+}
+
+function afficherStockParForfait() {
+  var total = totalTickets();
   var gb = document.getElementById("stockGlobalBar");
   gb.innerHTML = '<div class="total-bar">' +
     '<span class="total-bar-label">Total disponible</span>' +
     '<span class="total-bar-val">' + total + ' ticket(s)</span>' +
   '</div>';
 
-  // Sections par forfait
   var container = document.getElementById("stockParForfait");
   var html = "";
   for (var f = 0; f < FORFAITS.length; f++) {
     var ff = FORFAITS[f];
-    var codes = [];
-    for (var s = 0; s < stock.length; s++) {
-      if (stock[s].forfait === ff.id) codes.push(stock[s]);
-    }
+    var codes = stock.filter(function(c) { return c.forfait === ff.id; });
     var dispoCodes = codes.filter(function(c) { return !c.utilise; });
     var usedCodes  = codes.filter(function(c) { return c.utilise; });
     var nd = dispoCodes.length;
     var badgeCls = nd === 0 ? "zero" : nd <= 5 ? "low" : "ok";
-    var sectionId = "spf-" + ff.id;
 
     html += '<div class="spf-section">' +
       '<div class="spf-header" id="spfh-' + ff.id + '" onclick="toggleSpf(\'' + ff.id + '\')">' +
@@ -1110,24 +1110,21 @@ function renderStockTable() {
         '</div>' +
         '<span class="spf-chev" id="spfc-' + ff.id + '">&#9660;</span>' +
       '</div>' +
-      '<div class="spf-body" id="' + sectionId + '">' +
+      '<div class="spf-body" id="spf-' + ff.id + '">' +
         '<div class="spf-toolbar">' +
           '<button class="btn-efface-forfait" onclick="effacerStockForfait(\'' + ff.id + '\')">Effacer ce stock</button>' +
         '</div>';
 
     if (codes.length === 0) {
-      html += '<div style="padding:16px;color:var(--dim);font-size:14px;text-align:center;">Aucun code chargé — importez un CSV</div>';
+      html += '<div style="padding:14px;color:var(--dim);font-size:14px;text-align:center;">Aucun code — importez un CSV</div>';
     } else {
-      html += '<div style="overflow-x:auto;"><table class="stbl">' +
-        '<thead><tr><th>#</th><th>Code</th><th>Statut</th></tr></thead><tbody>';
+      html += '<div style="overflow-x:auto;"><table class="stbl"><thead><tr><th>#</th><th>Code</th><th>Statut</th></tr></thead><tbody>';
       for (var ci = 0; ci < codes.length; ci++) {
         var co = codes[ci];
-        var stCls = co.utilise ? "st-utilise" : "st-dispo";
-        var stTxt = co.utilise ? "Utilisé" : "Dispo";
         html += '<tr>' +
           '<td style="color:var(--dim);font-size:12px;">' + (ci+1) + '</td>' +
           '<td><span class="code-mono">' + co.code + '</span></td>' +
-          '<td><span class="st-badge ' + stCls + '">' + stTxt + '</span></td>' +
+          '<td><span class="st-badge ' + (co.utilise ? "st-utilise" : "st-dispo") + '">' + (co.utilise ? "Utilisé" : "Dispo") + '</span></td>' +
         '</tr>';
       }
       html += '</tbody></table></div>';
@@ -1156,17 +1153,19 @@ function effacerStockForfait(forfaitId) {
   var label = "";
   for (var i = 0; i < FORFAITS.length; i++) { if (FORFAITS[i].id === forfaitId) { label = FORFAITS[i].label; break; } }
   if (!confirm("Effacer tous les codes de \"" + label + "\" ?")) return;
-  var newStock = [];
-  for (var j = 0; j < stock.length; j++) { if (stock[j].forfait !== forfaitId) newStock.push(stock[j]); }
-  stock = newStock;
-  localStorage.setItem("stw_stock", JSON.stringify(stock));
-  updateNavStock();
-  renderStockTable();
-  toast("Stock " + label + " effacé");
+  if (!db) return;
+  db.collection("stock").where("forfait", "==", forfaitId).get().then(function(snap) {
+    var batch = db.batch();
+    snap.forEach(function(doc) { batch.delete(doc.ref); });
+    return batch.commit();
+  }).then(function() {
+    toast("Stock " + label + " effacé");
+    renderStockTable();
+  });
 }
 
 // ====================================================
-// HISTORIQUE
+// HISTORIQUE — depuis Firebase
 // ====================================================
 function filtreHisto(f, btn) {
   var btns = document.querySelectorAll(".flt");
@@ -1176,30 +1175,44 @@ function filtreHisto(f, btn) {
 }
 
 function renderHisto(filtre) {
+  if (!db) {
+    document.getElementById("histoContent").innerHTML =
+      '<div class="empty"><div class="empty-t">Firebase non connecté</div></div>';
+    return;
+  }
+  db.collection("ventes").orderBy("date", "desc").limit(100).get()
+    .then(function(snap) {
+      ventes = [];
+      snap.forEach(function(doc) { ventes.push(doc.data()); });
+      renderRecettes();
+      afficherHisto(filtre || "tout");
+    });
+}
+
+function afficherHisto(filtre) {
   var data = ventes.filter(function(v) {
     return filtre === "tout" ? true : v.forfait === filtre;
   });
-
   var el = document.getElementById("histoContent");
   if (data.length === 0) {
-    el.innerHTML = '<div class="empty"><div class="empty-ico">📭</div><div class="empty-t">Aucune vente</div><div>Les ventes validées apparaîtront ici.</div></div>';
+    el.innerHTML = '<div class="empty"><div class="empty-ico">📭</div><div class="empty-t">Aucune vente</div></div>';
     return;
   }
-
-  var html = '<table class="stbl"><thead><tr><th>Date</th><th>Forfait</th><th>Code</th><th>Prix</th><th>Paiement</th></tr></thead><tbody>';
+  var html = '<div style="overflow-x:auto;"><table class="stbl"><thead><tr><th>Date</th><th>Vendeur</th><th>Forfait</th><th>Code</th><th>Prix</th><th>Paiement</th></tr></thead><tbody>';
   for (var i = 0; i < data.length; i++) {
     var v = data[i];
     var d = new Date(v.date);
     var ds = ("0"+d.getDate()).slice(-2)+"/"+("0"+(d.getMonth()+1)).slice(-2)+" "+("0"+d.getHours()).slice(-2)+":"+("0"+d.getMinutes()).slice(-2);
     html += '<tr>' +
-      '<td style="font-size:11px;">' + ds + '</td>' +
-      '<td>' + v.forfaitLabel + '</td>' +
-      '<td><span class="code-mono">' + v.code + '</span></td>' +
-      '<td style="color:var(--or);font-weight:700;">' + fmt(v.prix) + ' F</td>' +
-      '<td style="font-size:11px;">' + labelPay(v.modePay) + '</td>' +
+      '<td style="font-size:12px;white-space:nowrap;">' + ds + '</td>' +
+      '<td style="font-size:12px;color:var(--or);">' + (v.vendeur||"?") + '</td>' +
+      '<td>' + (v.forfaitLabel||v.forfait||"?") + '</td>' +
+      '<td><span class="code-mono">' + (v.code||"") + '</span></td>' +
+      '<td style="color:var(--vert);font-weight:700;">' + fmt(v.prix||0) + ' F</td>' +
+      '<td style="font-size:12px;">' + labelPay(v.modePay||"") + '</td>' +
     '</tr>';
   }
-  html += '</tbody></table>';
+  html += '</tbody></table></div>';
   el.innerHTML = html;
 }
 
@@ -1313,42 +1326,31 @@ function sauvegarderForfait() {
   var prix  = parseInt(document.getElementById("fPrix").value, 10);
 
   if (!label || !id || !unite || !debit || isNaN(prix) || prix < 0) {
-    toast("Remplissez tous les champs", true);
-    return;
+    toast("Remplissez tous les champs", true); return;
   }
-
-  // Vérifier ID unique (sauf si on modifie le même)
   for (var k = 0; k < FORFAITS.length; k++) {
-    if (FORFAITS[k].id === id && k !== editIdx) {
-      toast("ID déjà utilisé : " + id, true);
-      return;
-    }
+    if (FORFAITS[k].id === id && k !== editIdx) { toast("ID déjà utilisé : " + id, true); return; }
   }
 
   var f = { id:id, label:label, unite:unite, debit:debit, prix:prix, badge:selBadgeVal, icone:selIcone };
 
-  if (editIdx !== null) {
-    FORFAITS[editIdx] = f;
-    toast("Forfait modifié");
-  } else {
-    FORFAITS.push(f);
-    toast("Forfait ajouté");
-  }
+  if (editIdx !== null) { FORFAITS[editIdx] = f; toast("Forfait modifié"); }
+  else { FORFAITS.push(f); toast("Forfait ajouté"); }
 
+  // Sync Firebase + localStorage
+  if (db) db.collection("config").doc("forfaits").set({ data: FORFAITS });
   localStorage.setItem("stw_forfaits", JSON.stringify(FORFAITS));
-  fermerModal();
-  renderGF();
-  renderForfaits();
+
+  fermerModal(); renderGF(); renderForfaits();
 }
 
 function supprimerForfait(idx) {
   var f = FORFAITS[idx];
   if (!confirm("Supprimer le forfait \"" + f.label + "\" ?")) return;
   FORFAITS.splice(idx, 1);
+  if (db) db.collection("config").doc("forfaits").set({ data: FORFAITS });
   localStorage.setItem("stw_forfaits", JSON.stringify(FORFAITS));
-  renderGF();
-  renderForfaits();
-  toast("Forfait supprimé");
+  renderGF(); renderForfaits(); toast("Forfait supprimé");
 }
 
 // Fermer modal en cliquant hors de la boîte
@@ -1492,20 +1494,29 @@ function sauvegarderParams() {
 
 function effacerStock() {
   if (!confirm("Effacer tout le stock ?")) return;
-  stock = []; localStorage.removeItem("stw_stock");
-  updateNavStock(); renderStockTable(); toast("Stock effacé");
+  if (!db) return;
+  db.collection("stock").get().then(function(snap) {
+    var batch = db.batch();
+    snap.forEach(function(doc) { batch.delete(doc.ref); });
+    return batch.commit();
+  }).then(function() { toast("Stock effacé"); });
 }
 
 function effacerVentes() {
   if (!confirm("Effacer tout l'historique des ventes ?")) return;
-  ventes = []; localStorage.removeItem("stw_ventes");
-  renderHisto("tout"); renderRecettes(); toast("Historique effacé");
+  if (!db) return;
+  db.collection("ventes").get().then(function(snap) {
+    var batch = db.batch();
+    snap.forEach(function(doc) { batch.delete(doc.ref); });
+    return batch.commit();
+  }).then(function() { toast("Historique effacé"); });
 }
 
 function effacerForfaits() {
   if (!confirm("Réinitialiser les forfaits par défaut ?")) return;
   FORFAITS = FORFAITS_DEFAULT_DATA.slice();
-  localStorage.removeItem("stw_forfaits");
+  if (db) db.collection("config").doc("forfaits").set({ data: FORFAITS });
+  localStorage.setItem("stw_forfaits", JSON.stringify(FORFAITS));
   renderGF(); renderForfaits(); toast("Forfaits réinitialisés");
 }
 
@@ -1667,18 +1678,45 @@ function initFirebase() {
     db = firebase.firestore();
     document.getElementById("fbStatus").textContent = "Firebase OK";
     document.getElementById("fbStatus").style.color = "var(--vert)";
+
+    // Charger les forfaits partagés
+    db.collection("config").doc("forfaits").onSnapshot(function(doc) {
+      if (doc.exists && doc.data().data && doc.data().data.length > 0) {
+        FORFAITS = doc.data().data;
+        localStorage.setItem("stw_forfaits", JSON.stringify(FORFAITS));
+      }
+      renderForfaits();
+    });
+
+    // Écouter le stock en temps réel
+    db.collection("stock").onSnapshot(function(snap) {
+      stock = [];
+      snap.forEach(function(doc) { stock.push(doc.data()); });
+      updateNavStock();
+    });
+
+    // Écouter les ventes en temps réel
+    db.collection("ventes").orderBy("date", "desc").limit(100)
+      .onSnapshot(function(snap) {
+        ventes = [];
+        snap.forEach(function(doc) { ventes.push(doc.data()); });
+        renderRecettes();
+      });
+
   } catch(e) {
     document.getElementById("fbStatus").textContent = "Firebase erreur";
     document.getElementById("fbStatus").style.color = "var(--rouge)";
+    // Fallback localStorage
+    FORFAITS = JSON.parse(localStorage.getItem("stw_forfaits") || "null") || FORFAITS_DEFAULT_DATA;
+    stock  = JSON.parse(localStorage.getItem("stw_stock")   || "[]");
+    ventes = JSON.parse(localStorage.getItem("stw_ventes")  || "[]");
+    renderForfaits();
+    updateNavStock();
   }
 }
 
 function envoyerVente(vente) {
-  if (!db) return;
-  vente.vendeur = nomVendeur;
-  db.collection("ventes").doc(vente.id).set(vente).catch(function(e) {
-    console.log("Firebase erreur:", e);
-  });
+  // Plus utilisé directement — validerVente écrit dans Firebase
 }
 
 // ====================================================

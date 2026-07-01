@@ -402,7 +402,21 @@ body { font-family:"Inter",sans-serif; background:var(--noir); color:var(--txt);
 .tpz-code { font-size:12px; font-weight:700; letter-spacing:4px; text-align:center; margin:10px 0; }
 .tpz-row { display:flex; justify-content:space-between; margin-bottom:3px; font-size:11px; }
 .tpz-footer { text-align:center; border-top:1px dashed #ccc; margin-top:8px; padding-top:6px; font-size:10px; color:#999; }
-@media print { body *{visibility:hidden!important} .ticket-print-zone,.ticket-print-zone *{visibility:visible!important} .ticket-print-zone{position:fixed;top:0;left:0;width:100%;background:#fff;z-index:9999;padding:20px;} }
+@media print {
+  body * { visibility:hidden !important; }
+  #ticketPhysiqueZone, #ticketPhysiqueZone * { visibility:visible !important; }
+  #ticketPhysiqueZone {
+    position:fixed; top:0; left:0; width:100%;
+    background:#fff; z-index:9999; padding:20px;
+    display:block !important;
+  }
+  .ticket-print-zone {
+    background:#fff !important; color:#000 !important;
+    max-width:300px; margin:0 auto;
+    font-family:"Courier New",monospace; font-size:13px;
+  }
+  #ticketPhysiqueZone button { display:none !important; }
+}
 
 /* ===== MINUTERIE ===== */
 .minuterie-zone { background:var(--g2); border:1px solid var(--bdr); border-radius:10px; padding:12px; display:none; }
@@ -1060,13 +1074,9 @@ function init() {
   renderForfaits();
   updateNavStock();
   renderHisto("tout");
-  // Vérifier session sauvegardée
-  var savedRole = localStorage.getItem("stw_role");
-  var savedNom  = localStorage.getItem("stw_vendeur");
-  if (savedRole && savedNom) {
-    nomVendeur = savedNom;
-    ouvrirSession(savedRole, savedNom);
-  }
+  // Toujours demander le code à l'ouverture
+  localStorage.removeItem("stw_role");
+  localStorage.removeItem("stw_vendeur");
 }
 
 // ====================================================
@@ -1199,23 +1209,91 @@ function renderForfaits() {
 // SÉLECTION FORFAIT → PIOCHE UN CODE
 // ====================================================
 function selectionForfait(id) {
-  if (!db) { toast("Firebase non connecté", true); return; }
+  if (!navigator.onLine || !db) {
+    toast("Hors-ligne — vente indisponible", true);
+    return;
+  }
   var f = null;
   for (var i = 0; i < FORFAITS.length; i++) {
     if (FORFAITS[i].id === id) { f = FORFAITS[i]; break; }
   }
   if (!f) return;
 
-  var code = piocher(id);
-  if (!code) {
-    toast(stock.length === 0 ? "Aucun stock chargé" : "Stock épuisé pour ce forfait !", true);
-    return;
-  }
+  // Chercher le prochain code disponible ET non réservé dans Firebase
+  db.collection("stock")
+    .where("forfait", "==", id)
+    .where("utilise", "==", false)
+    .where("reserve", "==", false)
+    .limit(1)
+    .get()
+    .then(function(snap) {
+      if (snap.empty) {
+        // Essayer sans filtre reserve (anciens codes sans ce champ)
+        db.collection("stock")
+          .where("forfait", "==", id)
+          .where("utilise", "==", false)
+          .limit(1)
+          .get()
+          .then(function(snap2) {
+            if (snap2.empty) {
+              toast("Stock epuise pour ce forfait !", true);
+              return;
+            }
+            var doc = snap2.docs[0];
+            // Vérifier qu'il n'est pas déjà réservé
+            if (doc.data().reserve) {
+              toast("Stock momentanement indisponible. Reessayez.", true);
+              return;
+            }
+            reserverEtAfficher(doc, f);
+          });
+        return;
+      }
+      reserverEtAfficher(snap.docs[0], f);
+    })
+    .catch(function() {
+      // Fallback local si Firebase lent
+      var code = piocher(id);
+      if (!code) { toast("Stock epuise !", true); return; }
+      selForfait = f;
+      selCode = code;
+      renderForfaits();
+      afficherQR(code, f);
+    });
+}
 
-  selForfait = f;
-  selCode = code;
-  renderForfaits();
-  afficherQR(code, f);
+function reserverEtAfficher(doc, forfait) {
+  var code = doc.data().code;
+  var expiry = new Date(Date.now() + 5 * 60 * 1000).toISOString(); // 5 min
+
+  // Réserver dans Firebase
+  doc.ref.update({
+    reserve: true,
+    reservePar: nomVendeur,
+    reserveExpiry: expiry
+  }).then(function() {
+    // Mettre à jour localement
+    for (var i = 0; i < stock.length; i++) {
+      if (stock[i].code === code) { stock[i].reserve = true; break; }
+    }
+    selForfait = forfait;
+    selCode = code;
+    renderForfaits();
+    afficherQR(code, forfait);
+
+    // Auto-libérer la réservation si pas confirmée dans 5 min
+    setTimeout(function() {
+      if (selCode === code) {
+        // Toujours en attente → libérer
+        doc.ref.update({ reserve: false, reservePar: "", reserveExpiry: "" });
+        for (var j = 0; j < stock.length; j++) {
+          if (stock[j].code === code) { stock[j].reserve = false; break; }
+        }
+        toast("Reservation expiree — ticket libere", true);
+        annulerSelection();
+      }
+    }, 5 * 60 * 1000);
+  });
 }
 
 // ====================================================
@@ -1223,7 +1301,7 @@ function selectionForfait(id) {
 // ====================================================
 function piocher(forfaitId) {
   for (var i = 0; i < stock.length; i++) {
-    if (!stock[i].utilise && stock[i].forfait === forfaitId) return stock[i].code;
+    if (!stock[i].utilise && !stock[i].reserve && stock[i].forfait === forfaitId) return stock[i].code;
   }
   return null;
 }
@@ -1231,7 +1309,7 @@ function piocher(forfaitId) {
 function getCodesDispo(forfaitId) {
   var res = [];
   for (var i = 0; i < stock.length; i++) {
-    if (!stock[i].utilise && stock[i].forfait === forfaitId) res.push(stock[i].code);
+    if (!stock[i].utilise && !stock[i].reserve && stock[i].forfait === forfaitId) res.push(stock[i].code);
   }
   return res;
 }
@@ -1328,20 +1406,35 @@ function selPay(el, mode) {
 // VALIDER VENTE
 // ====================================================
 function validerVente() {
-  if (!selForfait || !selCode || !db) return;
+  if (!selForfait || !selCode) return;
+
+  if (!navigator.onLine || !db) {
+    toast("Vente impossible hors-ligne. Verifiez votre connexion.", true);
+    return;
+  }
 
   var code = selCode;
   var forfait = selForfait;
 
-  // Marquer code utilisé dans Firebase
+  // Marquer utilisé dans le stock LOCAL immédiatement
+  for (var i = 0; i < stock.length; i++) {
+    if (stock[i].code === code) {
+      stock[i].utilise = true;
+      stock[i].reserve = false;
+      break;
+    }
+  }
+
+  // Mettre à jour l'affichage immédiatement
+  updateNavStock();
+  verifierAlerteStock();
+
+  // Marquer utilisé dans Firebase + retirer réservation
   db.collection("stock").where("code", "==", code).limit(1).get()
     .then(function(snap) {
-      if (!snap.empty) {
-        snap.docs[0].ref.update({ utilise: true });
-      }
+      if (!snap.empty) snap.docs[0].ref.update({ utilise: true, reserve: false, reservePar: "", reserveExpiry: "" });
     });
 
-  // Enregistrer la vente dans Firebase
   var vente = {
     id: "V" + Date.now(),
     date: new Date().toISOString(),
@@ -1354,17 +1447,9 @@ function validerVente() {
   };
   db.collection("ventes").doc(vente.id).set(vente);
 
-  toast("Vente validée — " + fmt(forfait.prix) + " FCFA");
-
-  // Ticket physique
+  toast("Vente validee - " + fmt(forfait.prix) + " FCFA");
   afficherTicketPhysique(code, forfait);
-
-  // Minuterie
   demarrerMinuterie(forfait);
-
-  // Alerte stock
-  verifierAlerteStock();
-
   resetVente();
 }
 
@@ -1372,6 +1457,16 @@ function validerVente() {
 // ANNULER SÉLECTION
 // ====================================================
 function annulerSelection() {
+  // Libérer la réservation dans Firebase
+  if (selCode && db) {
+    db.collection("stock").where("code", "==", selCode).limit(1).get()
+      .then(function(snap) {
+        if (!snap.empty) snap.docs[0].ref.update({ reserve: false, reservePar: "", reserveExpiry: "" });
+      });
+    for (var i = 0; i < stock.length; i++) {
+      if (stock[i].code === selCode) { stock[i].reserve = false; break; }
+    }
+  }
   selForfait = null;
   selCode = null;
   resetVente();
@@ -1679,6 +1774,14 @@ function renderGF() {
     '</div>';
   }
   list.innerHTML = html;
+
+  // Masquer boutons si vendeur
+  if (roleActuel === "vendeur") {
+    var btnAdd2 = document.querySelector(".gf-toolbar .btn-add");
+    if (btnAdd2) btnAdd2.style.display = "none";
+    var editDelBtns = document.querySelectorAll(".btn-edit, .btn-del");
+    for (var k = 0; k < editDelBtns.length; k++) editDelBtns[k].style.display = "none";
+  }
 }
 
 function ouvrirModal(idx) {
@@ -1731,6 +1834,7 @@ function selBadge(el, val) {
 }
 
 function sauvegarderForfait() {
+  if (roleActuel !== "patron") { toast("Accès refusé", true); return; }
   var label = document.getElementById("fLabel").value.trim();
   var id    = document.getElementById("fId").value.trim().toUpperCase();
   var unite = document.getElementById("fUnite").value.trim();
@@ -1757,6 +1861,7 @@ function sauvegarderForfait() {
 }
 
 function supprimerForfait(idx) {
+  if (roleActuel !== "patron") { toast("Accès refusé", true); return; }
   var f = FORFAITS[idx];
   if (!confirm("Supprimer le forfait \"" + f.label + "\" ?")) return;
   FORFAITS.splice(idx, 1);
@@ -1905,6 +2010,7 @@ function chargerParams() {
 }
 
 function sauvegarderParams() {
+  if (roleActuel !== "patron") { toast("Accès refusé", true); return; }
   var v = document.getElementById("paramVendeur").value.trim();
   if (v) { nomVendeur = v; localStorage.setItem("stw_vendeur", v); }
   PARAMS.ip       = document.getElementById("paramIP").value.trim() || "192.168.88.1";
@@ -2247,7 +2353,39 @@ function appliquerRole(role) {
     }
     if (isPatronOnly) t.style.display = role === "patron" ? "" : "none";
   }
-  if (role === "vendeur") goPage("vente", null);
+
+  if (role === "vendeur") {
+    // Masquer boutons modifier/supprimer forfaits
+    var btnAdd = document.querySelector(".gf-toolbar .btn-add");
+    if (btnAdd) btnAdd.style.display = "none";
+    var btnsEditDel = document.querySelectorAll(".btn-edit, .btn-del");
+    for (var k = 0; k < btnsEditDel.length; k++) btnsEditDel[k].style.display = "none";
+
+    // Masquer toutes les sections params sauf changer code
+    var paramSections = document.querySelectorAll(".param-section");
+    for (var m = 0; m < paramSections.length; m++) {
+      var sec = paramSections[m];
+      if (sec.id === "sectionChangerCode") {
+        sec.style.display = "block";
+      } else {
+        sec.style.display = "none";
+      }
+    }
+    // Masquer bouton enregistrer params
+    var btnSave = document.querySelector("#pg-params .btn-param-save");
+    if (btnSave) btnSave.style.display = "none";
+
+    goPage("vente", null);
+  } else {
+    // Patron : tout afficher
+    var paramSectionsP = document.querySelectorAll(".param-section");
+    for (var n = 0; n < paramSectionsP.length; n++) {
+      paramSectionsP[n].style.display = "block";
+    }
+    var btnSaveP = document.querySelector("#pg-params .btn-param-save");
+    if (btnSaveP) btnSaveP.style.display = "block";
+  }
+
   verifierAlerteStock();
 }
 
@@ -2457,20 +2595,28 @@ function sauvegarderEditVendeur() {
 // ====================================================
 function afficherTicketPhysique(code, forfait) {
   var now = new Date();
-  var ds = ("0"+now.getDate()).slice(-2)+"/"+("0"+(now.getMonth()+1)).slice(-2)+"/"+now.getFullYear()
-           +" "+("0"+now.getHours()).slice(-2)+":"+("0"+now.getMinutes()).slice(-2);
+  var date = ("0"+now.getDate()).slice(-2)+"/"+("0"+(now.getMonth()+1)).slice(-2)+"/"+now.getFullYear();
+  var heure = ("0"+now.getHours()).slice(-2)+":"+("0"+now.getMinutes()).slice(-2)+":"+("0"+now.getSeconds()).slice(-2);
   var zone = document.getElementById("ticketPrintContent");
   zone.innerHTML =
     '<div class="tpz-header">' +
-      '<div class="tpz-logo">STARTECH WiFi Zone</div>' +
-      '<div style="font-size:10px;color:#999;">Kaya · Burkina Faso</div>' +
+      '<div class="tpz-logo">Vente PRO — Startech BUSINESS</div>' +
+      '<div style="font-size:10px;color:#999;margin-top:2px;">Kaya · Burkina Faso · +226 70 60 81 48</div>' +
     '</div>' +
-    '<div class="tpz-code">' + code + '</div>' +
-    '<div class="tpz-row"><span>Forfait</span><span>' + forfait.label + '</span></div>' +
-    '<div class="tpz-row"><span>Prix</span><span>' + fmt(forfait.prix) + ' FCFA</span></div>' +
-    '<div class="tpz-row"><span>Validite</span><span>' + forfait.unite + '</span></div>' +
-    '<div class="tpz-row"><span>Date</span><span>' + ds + '</span></div>' +
-    '<div class="tpz-footer">Merci · +226 70 60 81 48</div>';
+    '<div style="text-align:center;border-bottom:1px dashed #ccc;padding-bottom:10px;margin-bottom:10px;">' +
+      '<div style="font-size:10px;color:#999;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Code d\'acces WiFi</div>' +
+      '<div class="tpz-code">' + code + '</div>' +
+    '</div>' +
+    '<div class="tpz-row"><span>Forfait</span><span style="font-weight:700;">' + forfait.label + '</span></div>' +
+    '<div class="tpz-row"><span>Duree</span><span>' + forfait.unite + '</span></div>' +
+    '<div class="tpz-row"><span>Debit</span><span>' + forfait.debit + '</span></div>' +
+    '<div class="tpz-row"><span>Prix</span><span style="font-weight:700;">' + fmt(forfait.prix) + ' FCFA</span></div>' +
+    '<div class="tpz-row"><span>Vendeur</span><span>' + nomVendeur + '</span></div>' +
+    '<div style="border-top:1px dashed #ccc;margin-top:8px;padding-top:8px;">' +
+      '<div class="tpz-row"><span>Date</span><span>' + date + '</span></div>' +
+      '<div class="tpz-row"><span>Heure</span><span style="font-weight:700;">' + heure + '</span></div>' +
+    '</div>' +
+    '<div class="tpz-footer">Merci de votre confiance<br>ticket.startech-pro.com</div>';
   document.getElementById("ticketPhysiqueZone").style.display = "block";
 }
 
@@ -2748,8 +2894,9 @@ function supprimerCredit(id) {
 function initOffline() {
   window.addEventListener("online", function() {
     document.getElementById("offlineBar").style.display = "none";
-    toast("Connexion rétablie");
+    toast("Connexion retablie — synchronisation...");
     initFirebase();
+    syncPendingVentes();
   });
   window.addEventListener("offline", function() {
     document.getElementById("offlineBar").style.display = "block";
@@ -2764,7 +2911,40 @@ function initOffline() {
   });
   if (!navigator.onLine) {
     document.getElementById("offlineBar").style.display = "block";
+    // Charger cache local
+    var cachedStock  = localStorage.getItem("stw_stock_cache");
+    var cachedVentes = localStorage.getItem("stw_ventes_cache");
+    if (cachedStock)  stock  = JSON.parse(cachedStock);
+    if (cachedVentes) ventes = JSON.parse(cachedVentes);
+    FORFAITS = JSON.parse(localStorage.getItem("stw_forfaits") || "null") || FORFAITS_DEFAULT_DATA;
+    updateNavStock();
+    renderRecettes();
   }
+}
+
+function syncPendingVentes() {
+  if (!db || !navigator.onLine) return;
+  var pending = JSON.parse(localStorage.getItem("stw_pending") || "[]");
+  if (pending.length === 0) return;
+
+  var count = 0;
+  for (var i = 0; i < pending.length; i++) {
+    (function(vente) {
+      // Sync vente
+      vente.synced = true;
+      db.collection("ventes").doc(vente.id).set(vente).then(function() {
+        count++;
+        // Sync code utilisé
+        db.collection("stock").where("code", "==", vente.code).limit(1).get()
+          .then(function(snap) {
+            if (!snap.empty) snap.docs[0].ref.update({ utilise: true });
+          });
+      });
+    })(pending[i]);
+  }
+
+  localStorage.removeItem("stw_pending");
+  toast(pending.length + " vente(s) synchronisee(s)");
 }
 
 // Cache local pour hors-ligne

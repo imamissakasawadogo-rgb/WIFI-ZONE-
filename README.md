@@ -1,2 +1,2 @@
-# WIFI-ZONE-
+# WIFI-ZONE
 Startech WiFi Zone - Vente tickets
